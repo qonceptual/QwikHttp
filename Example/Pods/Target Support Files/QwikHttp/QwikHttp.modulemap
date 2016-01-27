@@ -1,0 +1,6 @@
+framework module QwikHttp {
+  umbrella header "QwikHttp-umbrella.h"
+
+  export *
+  module * { export * }
+}

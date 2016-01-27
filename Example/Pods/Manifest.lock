@@ -1,0 +1,17 @@
+PODS:
+  - QwikHttp (0.1.0)
+  - SeaseAssist (0.0.6)
+
+DEPENDENCIES:
+  - QwikHttp (from `../`)
+  - SeaseAssist
+
+EXTERNAL SOURCES:
+  QwikHttp:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  QwikHttp: c1ee7d1438accc240d16886e912adee2b3ff4956
+  SeaseAssist: 8dc1e2c0c6ba2ccc5a744912e1877d77b59b0aca
+
+COCOAPODS: 0.39.0

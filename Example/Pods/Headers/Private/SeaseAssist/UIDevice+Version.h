@@ -1,0 +1,1 @@
+../../../SeaseAssist/Pod/Classes/UIDevice+Version.h

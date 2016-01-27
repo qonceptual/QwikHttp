@@ -1,0 +1,6 @@
+framework module Pods_QwikHttp_Example {
+  umbrella header "Pods-QwikHttp_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

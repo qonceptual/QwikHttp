@@ -7,14 +7,37 @@
 //
 
 import UIKit
+import QwikHttp
+import SeaseAssist
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
     }
 
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Do any additional setup after loading the view, typically from a nib.
+        QwikHttp(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).dictionaryResponse{ (responseDictionary) -> Void in
+            
+            if let feed = responseDictionary["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
+            {
+                //note, this handy helper comes from seaseAssist pod
+                UIAlertController.showAlertWithTitle("Success", andMessage: String(format: "We Found %li",entries.count), from: self)
+            }
+            else
+            {
+                UIAlertController.showAlertWithTitle("Failure", andMessage: "Error parsing the result", from: self)
+            }
+            
+            }.errorResponse { (errorResponse, error, statusCode) -> Void in
+                UIAlertController.showAlertWithTitle("Failure", andMessage: error.localizedDescription, from: self)
+            }.send()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
