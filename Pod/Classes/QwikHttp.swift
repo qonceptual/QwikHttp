@@ -27,12 +27,12 @@ public enum ParameterType
 }
 
 public class QwikHttp {
-
+    
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
     private var httpMethod : HttpRequestMethod!
     private var headers : [String : String]!
-    private var params : [String : String]!
+    private var params : [String : AnyObject]!
     private var body: NSData?
     private var parameterType : ParameterType!
     //private var error : NSError?
@@ -87,7 +87,7 @@ public class QwikHttp {
         }
         urlString = urlString + QwikHttp.paramStringFrom(params)
     }
-    public func addParams(params: [String: String]!) -> QwikHttp
+    public func addParams(params: [String: AnyObject]!) -> QwikHttp
     {
         self.params = combinedDictionary(self.params, with: params)
         return self
@@ -95,7 +95,7 @@ public class QwikHttp {
     
     public func addHeaders(headers: [String: String]!) -> QwikHttp
     {
-        self.headers = combinedDictionary(self.headers, with: headers)
+        self.headers = combinedDictionary(self.headers, with: headers) as! [String : String]
         return self
     }
     public func setBody(body : NSData!) -> QwikHttp
@@ -150,11 +150,11 @@ public class QwikHttp {
         return self
     }
     
-//TODO improve completion handlers with generics
-//    func setHandler<T>(handler: (responseObject: T!) -> Void)
-//    {
-//        
-//    }
+    //TODO improve completion handlers with generics
+    //    func setHandler<T>(handler: (responseObject: T!) -> Void)
+    //    {
+    //
+    //    }
     
     
     //Send the request!
@@ -176,7 +176,7 @@ public class QwikHttp {
     }
     
     /**** HELPERS ****/
-    private func combinedDictionary(from: [String:String]!, with: [String:String]! ) -> [String:String]!
+    private func combinedDictionary(from: [String:AnyObject]!, with: [String:AnyObject]! ) -> [String:AnyObject]!
     {
         var result = from
         for(key, value) in with
@@ -215,19 +215,19 @@ private class HttpRequestPooler
     {
         //make sure our request url is valid
         guard let url = NSURL(string: requestParams.urlString)
-        else
+            else
         {
             mainThread({ () -> () in
-            if let errorHandler = requestParams.errorHandler
-            {
-                let error = NSError(domain: "QwikHTTP", code: 0, userInfo: ["error" : "cannot parse response"])
-                errorHandler(errorResponse: nil, error: error, statusCode: nil)
-            }
-            if let globalHandler = requestParams.globalHandler
-            {
-                globalHandler(success: false)
-            }
-                })
+                if let errorHandler = requestParams.errorHandler
+                {
+                    let error = NSError(domain: "QwikHTTP", code: 0, userInfo: ["error" : "cannot parse response"])
+                    errorHandler(errorResponse: nil, error: error, statusCode: nil)
+                }
+                if let globalHandler = requestParams.globalHandler
+                {
+                    globalHandler(success: false)
+                }
+            })
             return
         }
         
@@ -246,17 +246,27 @@ private class HttpRequestPooler
         {
             request.HTTPBody = body
         }
-        else if requestParams.parameterType == .formEncoded  && requestParams.params.count > 0 
+        else if requestParams.parameterType == .formEncoded  && requestParams.params.count > 0
         {
             //convert parameters to form encoded values and set to body
-            request.HTTPBody = QwikHttp.paramStringFrom(requestParams.params).dataUsingEncoding(NSUTF8StringEncoding)
-            
-            //set the request type headers
-            //application/x-www-form-urlencoded
-            request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-            
+            if let params = requestParams.params as? [String : String]
+            {
+                request.HTTPBody = QwikHttp.paramStringFrom(params).dataUsingEncoding(NSUTF8StringEncoding)
+                
+                //set the request type headers
+                //application/x-www-form-urlencoded
+                request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            }
+                
+                //if we couldn't encode the values, then perhaps json was passed in unexpectedly, so try to parse it as json.
+            else
+            {
+                requestParams.setParameterType(.json)
+            }
         }
-        else if requestParams.parameterType == .json && requestParams.params.count > 0
+        
+        //try json parsing, note that formEncoding could have changed the type if there was an error, so don't use an else if
+        if requestParams.parameterType == .json && requestParams.params.count > 0
         {
             //convert parameters to json string and form and set to body
             do {
@@ -266,15 +276,15 @@ private class HttpRequestPooler
             }
             catch let JSONError as NSError {
                 mainThread({ () -> () in
-                if let errorHandler = requestParams.errorHandler
-                {
-                    errorHandler(errorResponse: nil, error: JSONError, statusCode: nil)
-                }
-                if let globalHandler = requestParams.globalHandler
-                {
-                    globalHandler(success: false)
-                }
-                    })
+                    if let errorHandler = requestParams.errorHandler
+                    {
+                        errorHandler(errorResponse: nil, error: JSONError, statusCode: nil)
+                    }
+                    if let globalHandler = requestParams.globalHandler
+                    {
+                        globalHandler(success: false)
+                    }
+                })
                 return
             }
             
@@ -294,14 +304,14 @@ private class HttpRequestPooler
                 if httpResponse.statusCode != 200
                 {
                     mainThread({ () -> () in
-                    if let errorHandler = requestParams.errorHandler
-                    {
-                        errorHandler(errorResponse: getResponseString(responseData), error: error, statusCode: httpResponse.statusCode)
-                    }
-                    if let globalHandler = requestParams.globalHandler
-                    {
-                        globalHandler(success: false)
-                    }
+                        if let errorHandler = requestParams.errorHandler
+                        {
+                            errorHandler(errorResponse: getResponseString(responseData), error: error, statusCode: httpResponse.statusCode)
+                        }
+                        if let globalHandler = requestParams.globalHandler
+                        {
+                            globalHandler(success: false)
+                        }
                     })
                     return
                 }
@@ -319,7 +329,7 @@ private class HttpRequestPooler
                 })
             }
                 
-            //otherwise try to parse our response data into the corresponding types for our completion handlers
+                //otherwise try to parse our response data into the corresponding types for our completion handlers
             else if let data = responseData
             {
                 //return data to our data handler
@@ -336,7 +346,7 @@ private class HttpRequestPooler
                     if let string = getResponseString(data)
                     {
                         mainThread({ () -> () in
-                        stringHandler(responseString: string)
+                            stringHandler(responseString: string)
                         })
                     }else if globalError == nil
                     {
