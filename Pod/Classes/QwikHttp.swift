@@ -46,6 +46,7 @@ public class QwikHttp {
     private var dataHandler : HttpDataCompletionHandler?
     private var errorHandler : HttpErrorCompletionHandler?
     private var globalHandler : HttpGlobalCompletionHandler?
+    private var sent = false
     
     
     private var timeOut : Double!
@@ -161,6 +162,7 @@ public class QwikHttp {
     //Send the request!
     public func send(handler: HttpGlobalCompletionHandler? = nil)
     {
+        self.sent = true
         self.globalHandler = handler
         HttpRequestPooler.sendRequest(self)
     }
@@ -177,6 +179,7 @@ public class QwikHttp {
         self.responseStatusCode = nil
         self.error = nil
         self.result = nil
+        self.sent = false
     }
     
     /**** HELPERS ****/
@@ -208,6 +211,16 @@ public class QwikHttp {
             first = false
         }
         return string
+    }
+    
+    //if we deinit the thread before we ran it, then call an error handler and log this. They probably forgot to send
+    deinit
+    {
+        NSLog("QwikHttp Error: Request to URL %@ dealloc'ed before it was sent. You likely forgot to call send() or need to add a strong reference to the object.",urlString)
+        if let errorHandler = self.errorHandler
+        {
+            errorHandler(errorResponse: nil, error: NSError(domain: "QwikHttp", code: 0, userInfo: ["Error": "Thread was not run before being deallocated. Did you forget to call send()?"]), statusCode: 0)
+        }
     }
     
 }
