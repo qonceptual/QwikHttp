@@ -99,12 +99,18 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
 
 ## Installation
 
+###Pods
 QwikHttp is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
 pod "QwikHttp"
 ```
+
+###Or add the source.
+If you have problems using the pod, or don't want to use cocoaPods, it will be as simple as adding the source from the project into your own. Currently, that is only one file (QwikHttp.swift)
+
+There are no external dependencies!
 
 ## Further Notes
 
