@@ -75,6 +75,18 @@ QwikHttp(urlString: "http://api.com", httpMethod: .get).dictionaryResponse{ (res
         //if success do x
     }
 ```
+You can access the response data and errors received directly from the NSURLSession response
+```
+QwikHttp(urlString: "http://api.com", httpMethod: .get)
+.send { (success) -> Void in
+//if success do x
+    data = result
+    data = 
+
+}
+```
+
+
 
 #### Retain it and re run it
 since QwikHttp is an object, you can hold on to it, pass it around and run it again!
@@ -87,6 +99,7 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
         
         //run it again after some delay
         NSThread.sleep(1000)
+        self.qwikHttp.reset()
         run(self.qwikHttp)
     }
 

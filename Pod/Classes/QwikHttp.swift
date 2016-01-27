@@ -35,9 +35,9 @@ public class QwikHttp {
     private var params : [String : AnyObject]!
     private var body: NSData?
     private var parameterType : ParameterType!
-    //private var error : NSError?
-    //private var result : NSData?
-    //private var responseStatusCode: NSInteger?
+    public var error : NSError?
+    public var result : NSData?
+    public var responseStatusCode: NSInteger?
     private var cachePolicy: NSURLRequestCachePolicy!
     
     private var stringHandler : HttpStringCompletionHandler?
@@ -174,6 +174,9 @@ public class QwikHttp {
         self.stringHandler = nil
         self.dictionaryHandler = nil
         self.dataHandler = nil
+        self.responseStatusCode = nil
+        self.error = nil
+        self.result = nil
     }
     
     /**** HELPERS ****/
@@ -298,9 +301,15 @@ private class HttpRequestPooler
             
             var responseStatusCode : NSInteger? = nil
             
+            //set the values straight to the request object so we can read it if needed.
+            requestParams.result = responseData
+            requestParams.error = error
+            
             //set the responseCode
             if let httpResponse = urlResponse as? NSHTTPURLResponse {
                 responseStatusCode = httpResponse.statusCode
+                
+                requestParams.responseStatusCode = responseStatusCode
                 
                 if httpResponse.statusCode != 200
                 {
