@@ -111,6 +111,13 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
     }
 
 ```
+This also means that if you don't want to use the inline, builder style syntax, you don't have to!
+```
+    let self.qwikHttp = QwikHttp(urlString: "http://api.com", httpMethod: .get)
+    self.qwikHttp.addParams([:])
+    self.qwikHttp.addHeaders([:])
+    self.qwikHttp.run()
+```
 
 ## Installation
 
