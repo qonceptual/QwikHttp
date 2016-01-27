@@ -19,7 +19,9 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 QwikHttp is based around that making HTTP networking calls to your Rest APIs should be quick,
    easy, and clean. Qwik Http allows you to send http requests and get its results back in a single line of code
-   It is super, light weight- but very dynamic. It uses an inline builder style syntax to keep your code super clean
+   It is super, light weight- but very dynamic. It uses an inline builder style syntax to keep your code super clean.
+
+It is written in swift and uses the most recent ios networking api, NSURLSession.
 
 DESC
   s.homepage         = "https://github.com/qonceptual/QwikHttp"
