@@ -20,6 +20,8 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
+        MBProgressHUD.showWithTitle("Loading")
+        
         //call a get to the itunes search api and find our top overall paid apps on the US Store.
         QwikHttp(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).dictionaryResponse{ (responseDictionary) -> Void in
             
@@ -35,7 +37,9 @@ class ViewController: UIViewController {
             
             }.errorResponse { (errorResponse, error, statusCode) -> Void in
                 UIAlertController.showAlertWithTitle("Failure", andMessage: error.localizedDescription, from: self)
-            }.send()
+            }.send { (success) -> Void in
+                 MBProgressHUD.hide()
+        }
     }
     
     override func didReceiveMemoryWarning() {
