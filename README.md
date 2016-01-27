@@ -51,7 +51,7 @@ There are various Typed response handlers that correspond to the type of data Yo
 ```
 The following types are supported:
 - Dictionary: parsed from JSON
-- Array: also parsed from JSON
+- Array: also parsed from JSON into an array of dictionaries
 - String: parsed from the data response
 - Data: the raw response data, can use used for binary responses
 
