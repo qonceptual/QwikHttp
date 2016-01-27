@@ -74,7 +74,7 @@ public class QwikHttp {
         return self
     }
     
-    public func addUrlParams(params: [String: String]!)
+    public func addUrlParams(params: [String: String]!) -> QwikHttp
     {
         //start our URL Parameters
         if let _ = urlString.rangeOfString("?")
@@ -86,6 +86,7 @@ public class QwikHttp {
             urlString = urlString + "?"
         }
         urlString = urlString + QwikHttp.paramStringFrom(params)
+        return self
     }
     public func addParams(params: [String: AnyObject]!) -> QwikHttp
     {
