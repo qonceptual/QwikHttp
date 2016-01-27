@@ -86,6 +86,8 @@ QwikHttp(urlString: "http://api.com", httpMethod: .get)
 }
 ```
 
+#### Threading
+Response Handlers are always called on the main thread. This means that you don't have to worry about explicity running on the main thread in your completion handlers, which makes your more managable. If, however you are expecting that code running in your response handlers is still running on a background thread, you will be incorrect. Make sure you explicitly run on the background thread if that is the behavior you desire.
 
 
 #### Retain it and re run it
