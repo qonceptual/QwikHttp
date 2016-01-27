@@ -216,10 +216,13 @@ public class QwikHttp {
     //if we deinit the thread before we ran it, then call an error handler and log this. They probably forgot to send
     deinit
     {
-        NSLog("QwikHttp Error: Request to URL %@ dealloc'ed before it was sent. You likely forgot to call send() or need to add a strong reference to the object.",urlString)
-        if let errorHandler = self.errorHandler
+        if(!self.sent)
         {
-            errorHandler(errorResponse: nil, error: NSError(domain: "QwikHttp", code: 0, userInfo: ["Error": "Thread was not run before being deallocated. Did you forget to call send()?"]), statusCode: 0)
+            NSLog("QwikHttp Error: Request to URL %@ dealloc'ed before it was sent. You likely forgot to call send() or need to add a strong reference to the object.",urlString)
+            if let errorHandler = self.errorHandler
+            {
+                errorHandler(errorResponse: nil, error: NSError(domain: "QwikHttp", code: 0, userInfo: ["Error": "Thread was not run before being deallocated. Did you forget to call send()?"]), statusCode: 0)
+            }
         }
     }
     
