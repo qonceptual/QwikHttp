@@ -42,7 +42,7 @@ You can set the body directly and add your own headers
 Response Handlers are super easy to use too. 
 
 #### Typed Result Handlers
-There are various Typed response handlers that correspond to the type of data You are expecting to get back. By letting the api know you want an array of JSON objects parsed into NSDictionaries, you can unload all this repetitive parsing logic and let the API do it.
+There are various Typed response handlers that correspond to the type of data You are expecting to get back. By letting the api know you want an array of JSON objects parsed into NSDictionaries for example, you can unload all this repetitive parsing logic and let the API do it.
 ```
     QwikHttp(urlString: "http://api.com", httpMethod: .get).dictionaryResponse{ (responseDictionary) -> Void in
         //the api's JSON response has been parsed into an NSDictionary for you, guaranteed!
