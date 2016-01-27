@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        // Do any additional setup after loading the view, typically from a nib.
+        //call a get to the itunes search api and find our top overall paid apps on the US Store.
         QwikHttp(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).dictionaryResponse{ (responseDictionary) -> Void in
             
             if let feed = responseDictionary["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
