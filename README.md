@@ -90,7 +90,7 @@ QwikHttp(urlString: "http://api.com", httpMethod: .get)
 Response Handlers are always called on the main thread. This means that you don't have to worry about explicity running on the main thread in your completion handlers, which makes your more managable. If, however you are expecting that code running in your response handlers is still running on a background thread, you will be incorrect. Make sure you explicitly run on the background thread if that is the behavior you desire.
 
 
-#### Retain it and re run it
+### Retain it and re run it
 since QwikHttp is an object, you can hold on to it, pass it around and run it again!
 
 ```
@@ -117,6 +117,12 @@ This also means that if you don't want to use the inline, builder style syntax, 
     self.qwikHttp.addParams([:])
     self.qwikHttp.addHeaders([:])
     self.qwikHttp.run()
+```
+
+### Set default time out, request type and cache Policy
+
+```
+    QwikHttp.defaultTimeOut = 200
 ```
 
 ## Installation

@@ -28,6 +28,10 @@ public enum ParameterType
 
 public class QwikHttp {
     
+    public static var defaultTimeOut = 40 as Double
+    public static var defaultCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
+    public static var defaultParameterType = ParameterType.json
+    
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
     private var httpMethod : HttpRequestMethod!
@@ -58,9 +62,9 @@ public class QwikHttp {
         self.httpMethod = httpMethod
         self.headers = [:]
         self.params = [:]
-        self.parameterType = .json
-        self.cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
-        self.timeOut = 20
+        self.parameterType = QwikHttp.defaultParameterType
+        self.cachePolicy = QwikHttp.defaultCachePolicy
+        self.timeOut = QwikHttp.defaultTimeOut
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
