@@ -76,6 +76,27 @@ QwikHttp(urlString: "http://api.com", httpMethod: .get).dictionaryResponse{ (res
     }
 ```
 
+#### Retain it and re run it
+since QwikHttp is an object, you can hold on to it, pass it around and run it again!
+
+```
+    func setup()
+    {
+        let self.qwikHttp = QwikHttp(urlString: "http://api.com", httpMethod: .get)
+        run(self.qwikHttp)
+        
+        //run it again after some delay
+        NSThread.sleep(1000)
+        run(self.qwikHttp)
+    }
+
+    func run(qwikHttp: QwikHttp!)
+    {
+        qwikHttp.run()
+    }
+
+```
+
 ## Installation
 
 QwikHttp is available through [CocoaPods](http://cocoapods.org). To install
