@@ -23,10 +23,12 @@ class ViewController: UIViewController {
         MBProgressHUD.showWithTitle("Loading")
         
         //call a get to the itunes search api and find our top overall paid apps on the US Store.
-        QwikHttp(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).dictionaryResponse{ (responseDictionary) -> Void in
+        QwikHttp<NSDictionary>(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).getResponse({ (result, error, request) -> Void in
+            
+            MBProgressHUD.hide()
             
             //parse our feed object from the response
-            if let feed = responseDictionary["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
+            if let dict = result, let feed = dict["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
             {
                 //note, this handy helper comes from seaseAssist pod
                 UIAlertController.showAlertWithTitle("Success", andMessage: String(format: "We Found %li",entries.count), from: self)
@@ -39,14 +41,7 @@ class ViewController: UIViewController {
             }
             
             //show an alert with our error if one occurred
-            }.errorResponse { (errorResponse, error, statusCode) -> Void in
-                
-                UIAlertController.showAlertWithTitle("Failure", andMessage: error.localizedDescription, from: self)
-            }.send { (success) -> Void in
-                
-                //hide our progress dialog no matter what happens
-                MBProgressHUD.hide()
-        }
+            })
     }
 
 }

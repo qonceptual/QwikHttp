@@ -27,6 +27,7 @@
 		1EA2FFC09585A9EBF83311F4B1845917 /* UIImage+Blur.h in Headers */ = {isa = PBXBuildFile; fileRef = F3BFC314005E4F02D2C1D4B5D206E705 /* UIImage+Blur.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		215BBB67AA0F6AFD04FAECABCAFA6406 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE3FE6D2647CFA2C23E050DAF4B2EE9 /* AVFoundation.framework */; };
 		21D139048F31C81E995C93FB59DC95E3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5D8BF9A1FA0CDD81D24BA8625AE89B9 /* Foundation.framework */; };
+		2509B3079599E936AFF0D35563962E64 /* QwikHttp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B327DBC06C61B847F6F95D64D1D5D2B4 /* QwikHttp-dummy.m */; };
 		253513AB4F89265C85A105710BF3ADC8 /* MBProgressHUD+Singleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BDA3E1133817C508CAB5B9B0CA70F7A /* MBProgressHUD+Singleton.m */; };
 		26DDE6138F75CC480A64AC8124EA8C5D /* UIView+Animation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2731382EE934A65B2245B59D6195C6A2 /* UIView+Animation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2752EBCEDD15F903B10C2CB4F2A2C097 /* UIImageView+Networking.h in Headers */ = {isa = PBXBuildFile; fileRef = 795B68ABCFDEC37ADCDC92824CC3595C /* UIImageView+Networking.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -42,6 +43,7 @@
 		43C51B78BFA1421531EE96A7F2FE530A /* NSMutableArray+shuffling.h in Headers */ = {isa = PBXBuildFile; fileRef = 56270B2660A549B7D9E74E54D4DDE1E8 /* NSMutableArray+shuffling.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		47DF4673C262E3B81C9CD811A1539D44 /* GlossyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 1259636801FF3E9E8A5B59AD0E44E28D /* GlossyButton.m */; };
 		4DADA7D44AED86C0DC6D32297C0D8942 /* UIView+MotionEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DD01B547E5F93F07D7DFFB68EFFFF56 /* UIView+MotionEffect.m */; };
+		4EF9C32539348DE2AD9E3125C7FC5B49 /* QwikHttp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4C96A9F58F418E49C37079C2EF6636 /* QwikHttp.swift */; };
 		5011BE71CE9D2147CCE7AE90F511CE96 /* UIAlertController+TextEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0570FD25A0AD1A31D53E3CF3B73B2F34 /* UIAlertController+TextEntry.m */; };
 		5028AE8EEB29EDDB7B3B9C51A7329CE2 /* UILabel+Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C1553463B76AE311F3C19DCD58EE85D /* UILabel+Message.m */; };
 		509DC612293D03EDC991B8A7C9568549 /* Pods-QwikHttp_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F5659F3996413E9C399D98622F2A15 /* Pods-QwikHttp_Tests-dummy.m */; };
@@ -68,6 +70,7 @@
 		766FB612D9E4BA2C0FAB6D2A8B1AA927 /* UIImageView+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = DF7CDFAE890AE9B31369DD0628EF1F3C /* UIImageView+Networking.m */; };
 		7A1B8F8D47712833B77C5173719F4C83 /* UIImageView+Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = C28BEF1967FD4040221DAD76D36B8000 /* UIImageView+Helpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7A771B0D6CF97CF35E0411F6334BEBDF /* DatePickerTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 8E7F82C7B693A215FFB121FB6C28EB9E /* DatePickerTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7A814F1B8C5F01093028DC3626C44F1E /* QwikConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92A6F68690A8B3DA9E18953F014417 /* QwikConversion.swift */; };
 		7C05AC4659C48EE5EFC7E3C061D20E12 /* UINavigationController+Transitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D8BCCE5D1A1349AF1E942F9B8AF6684 /* UINavigationController+Transitions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8047238948F7F60DBD5F7A3522971502 /* UIButton+TitleHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 82CA8914959C1E3D185C7FD6FF47FD8A /* UIButton+TitleHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83B000F09A5EC230A5FCF378247B52C8 /* UIDevice+Version.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DB6B39A53130E63FCC24481C4809CB3 /* UIDevice+Version.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -76,7 +79,6 @@
 		85FBBC5ACD2C068E362D0CCBDF110513 /* UIImage+Cache.m in Sources */ = {isa = PBXBuildFile; fileRef = D0281283155F9E51BA32F2886C8DFB6A /* UIImage+Cache.m */; };
 		8660DCE78B792E109801A2DF16433167 /* CircleButton.h in Headers */ = {isa = PBXBuildFile; fileRef = CAB9E58964DEF89EE7FE68C855A42674 /* CircleButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88B4E0E02B77296D8008726AA1182535 /* UIDevice+Version.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C7273124DDC26F8E4AE331B721D2 /* UIDevice+Version.m */; };
-		8ACF82FC8ACC552693E26172F7007668 /* QwikHttp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C23A2748DC4A8D1CA25783BE73972C /* QwikHttp.swift */; };
 		8B08778F9CB27FC7384D469889E1E3F4 /* UIImage+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E834CBE9BC4DF1848D178828C8AC7B /* UIImage+Helpers.m */; };
 		8E63C5798C24E07A274CA1A60C777AB8 /* UITextField+Toolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = EF6D620F2EBD2A1094EEA2CBE23E55C2 /* UITextField+Toolbar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8F0CEBBB8398FC0095992CB738BC5878 /* NSArray+Rearrange.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1B8ABBE5F21CD241EFFF9936A07636 /* NSArray+Rearrange.m */; };
@@ -131,7 +133,6 @@
 		DE5C3415960082E7BE4AFF18D1D0CA95 /* ReachabilityTest.h in Headers */ = {isa = PBXBuildFile; fileRef = D121446BEA728FF68500FF0D0B518790 /* ReachabilityTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E1D89CF956CF84A666A11B0F9CB9F123 /* GCNetworkReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC0F3600DB7D64EA03BBDE8B5C265CB /* GCNetworkReachability.m */; };
 		E3D65035760602CE99788225C171DD0A /* SpeechService.h in Headers */ = {isa = PBXBuildFile; fileRef = 6C4393B17169EAA990F70ECFF9B03837 /* SpeechService.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		EB90FA9C9D9F9B20F807AA47AC917D75 /* QwikHttp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B327DBC06C61B847F6F95D64D1D5D2B4 /* QwikHttp-dummy.m */; };
 		ECF7174F759DE95A8D115F6835776FFA /* NSThread+Delay.m in Sources */ = {isa = PBXBuildFile; fileRef = FBC059107729E224DE45307667629F1E /* NSThread+Delay.m */; };
 		EE80DC99C19F8E9D70E3BB49DF855E44 /* NSFileManager+Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 911E06FE734E91CCD2416550BFDD3674 /* NSFileManager+Helpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EE9CCDD0975B40B2F693F404AA585C1A /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = D862DACC59B3B109F7F5F37AD930A964 /* UIColor+Hex.m */; };
@@ -227,6 +228,7 @@
 		561B5999FE399E70AF428448B9F40CE7 /* UIImageView+Url.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+Url.h"; path = "Pod/Classes/UIImageView+Url.h"; sourceTree = "<group>"; };
 		56270B2660A549B7D9E74E54D4DDE1E8 /* NSMutableArray+shuffling.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSMutableArray+shuffling.h"; path = "Pod/Classes/NSMutableArray+shuffling.h"; sourceTree = "<group>"; };
 		59EE95F576FFA68E1D7F4F0A4675AEC6 /* Pods-QwikHttp_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-QwikHttp_Example.modulemap"; sourceTree = "<group>"; };
+		5A4C96A9F58F418E49C37079C2EF6636 /* QwikHttp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QwikHttp.swift; sourceTree = "<group>"; };
 		5B571E5C5D79A220F9AE01287F8E4147 /* UIViewController+Top.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+Top.m"; path = "Pod/Classes/UIViewController+Top.m"; sourceTree = "<group>"; };
 		5DA04DDBCE6739D6F076AF056E389696 /* NSURL+Helpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSURL+Helpers.h"; path = "Pod/Classes/NSURL+Helpers.h"; sourceTree = "<group>"; };
 		5DB6B39A53130E63FCC24481C4809CB3 /* UIDevice+Version.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIDevice+Version.h"; path = "Pod/Classes/UIDevice+Version.h"; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 		9C9F7EFE84DAD125DF4362377E969FCF /* SpeechService.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SpeechService.m; path = Pod/Classes/SpeechService.m; sourceTree = "<group>"; };
 		9E095A11815E04AF0FDF5F41EF8E1993 /* UIView+MotionEffect.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+MotionEffect.h"; path = "Pod/Classes/UIView+MotionEffect.h"; sourceTree = "<group>"; };
 		9F08DEAB25B3E7B2CF5DE367DBAA7E4E /* ReachabilityTest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ReachabilityTest.m; path = Pod/Classes/ReachabilityTest.m; sourceTree = "<group>"; };
+		9F92A6F68690A8B3DA9E18953F014417 /* QwikConversion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QwikConversion.swift; sourceTree = "<group>"; };
 		A0904E82ED49DD688731759502DF84CA /* UIView+AnimateShow.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+AnimateShow.m"; path = "Pod/Classes/UIView+AnimateShow.m"; sourceTree = "<group>"; };
 		A3388CEEE24F56756BCAC8EA02D441F6 /* QwikHttp.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QwikHttp.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		A43297D139537A09710A9299397679C4 /* UIViewController+Back.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Back.h"; path = "Pod/Classes/UIViewController+Back.h"; sourceTree = "<group>"; };
@@ -293,7 +296,6 @@
 		B183D234F00D8A775E8E100AF9FF951A /* UIViewController+Blur.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+Blur.m"; path = "Pod/Classes/UIViewController+Blur.m"; sourceTree = "<group>"; };
 		B327DBC06C61B847F6F95D64D1D5D2B4 /* QwikHttp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "QwikHttp-dummy.m"; sourceTree = "<group>"; };
 		B439F9F0114FFC7F74DA9228B904667B /* SeaseAssist-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SeaseAssist-prefix.pch"; sourceTree = "<group>"; };
-		B4C23A2748DC4A8D1CA25783BE73972C /* QwikHttp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QwikHttp.swift; sourceTree = "<group>"; };
 		B76FA9A94811D5651F5A3DACF0872E0A /* QwikHttp.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = QwikHttp.modulemap; sourceTree = "<group>"; };
 		B8B648E3E06A799284F4AAF0E76EBD3B /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B9049D88752B6B2EB94F7E4465C79F58 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
@@ -573,6 +575,15 @@
 			path = "Target Support Files/Pods-QwikHttp_Example";
 			sourceTree = "<group>";
 		};
+		463DD1677C131E9B0243D134DB5138B4 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				9F92A6F68690A8B3DA9E18953F014417 /* QwikConversion.swift */,
+				5A4C96A9F58F418E49C37079C2EF6636 /* QwikHttp.swift */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
 		4C30922E56E39AAEC7F8B393F387052F /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -638,14 +649,6 @@
 			path = "Target Support Files/Pods-QwikHttp_Tests";
 			sourceTree = "<group>";
 		};
-		9EDA6994D93A3FFC095663C683134786 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				FFEED1BCF22DF64F2192984196BFA0D4 /* Classes */,
-			);
-			path = Pod;
-			sourceTree = "<group>";
-		};
 		B42A4224B9BAF15CC9FEDE95044DE816 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -656,6 +659,14 @@
 				9BC5A3EFBA7A264B6E0EE915B8DDE61A /* UIKit.framework */,
 			);
 			name = iOS;
+			sourceTree = "<group>";
+		};
+		B7D7678E20218268D85420899A3CAABA /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				463DD1677C131E9B0243D134DB5138B4 /* Classes */,
+			);
+			path = Pod;
 			sourceTree = "<group>";
 		};
 		BAB3DAD3D41456E0D843E058F5211DB2 /* Targets Support Files */ = {
@@ -670,7 +681,7 @@
 		BCFFF9E23C83D28E82AFCA52FA1054FE /* QwikHttp */ = {
 			isa = PBXGroup;
 			children = (
-				9EDA6994D93A3FFC095663C683134786 /* Pod */,
+				B7D7678E20218268D85420899A3CAABA /* Pod */,
 				4C30922E56E39AAEC7F8B393F387052F /* Support Files */,
 			);
 			name = QwikHttp;
@@ -683,14 +694,6 @@
 				023BBC4EBBC8D0675B6A1E575F29C7E5 /* SeaseAssist */,
 			);
 			name = Pods;
-			sourceTree = "<group>";
-		};
-		FFEED1BCF22DF64F2192984196BFA0D4 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				B4C23A2748DC4A8D1CA25783BE73972C /* QwikHttp.swift */,
-			);
-			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -885,7 +888,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 85B0F8C5B7610F93A4C38CD9CAB2D240 /* Build configuration list for PBXNativeTarget "QwikHttp" */;
 			buildPhases = (
-				4106F18195749CDB39B4011A070653A2 /* Sources */,
+				4C51D080D0EFFE52F619C287DF90D724 /* Sources */,
 				C6A2CDBF63624F45B78EC2AD7C2FA543 /* Frameworks */,
 				0FE7D8CF176DF6C8E64A52FACEEDE8F9 /* Resources */,
 				05F6C1604942C6549D7670790D2D7AF4 /* Headers */,
@@ -972,12 +975,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4106F18195749CDB39B4011A070653A2 /* Sources */ = {
+		4C51D080D0EFFE52F619C287DF90D724 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB90FA9C9D9F9B20F807AA47AC917D75 /* QwikHttp-dummy.m in Sources */,
-				8ACF82FC8ACC552693E26172F7007668 /* QwikHttp.swift in Sources */,
+				7A814F1B8C5F01093028DC3626C44F1E /* QwikConversion.swift in Sources */,
+				2509B3079599E936AFF0D35563962E64 /* QwikHttp-dummy.m in Sources */,
+				4EF9C32539348DE2AD9E3125C7FC5B49 /* QwikHttp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

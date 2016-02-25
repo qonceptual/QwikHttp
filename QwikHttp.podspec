@@ -8,14 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = "QwikHttp"
-  s.version          = "0.8.0"
+  s.version          = "1.0.0"
   s.summary          = "QwikHTTP is a simple, super powerful Http Networking library."
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = <<-DESC
 QwikHttp is based around that making HTTP networking calls to your Rest APIs should be quick,
    easy, and clean. Qwik Http allows you to send http requests and get its results back in a single line of code
@@ -29,7 +23,7 @@ DESC
   s.license          = 'MIT'
   s.author           = { "Logan Sease" => "logansease@qonceptual.com" }
   s.source           = { :git => "https://github.com/qonceptual/QwikHttp.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.social_media_url = 'https://twitter.com/logansease'
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true

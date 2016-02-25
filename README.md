@@ -7,12 +7,12 @@ QwikHttp is written in Swift, but can be used in both objective-c or swift proje
 
 ## Usage
 
-Here are some example of how easy it is to use QwikHttp
+Here are some example of how easy it is to use QwikHttp.
 
 ###A simple request
 
 ```
-    QwikHttp(urlString: "http://api.com", httpMethod: .get).send()
+    QwikHttp<NSString>(urlString: "http://api.com", httpMethod: .get).send()
 ```
 
 ###Parameters and Headers
@@ -22,68 +22,92 @@ You can set json, url or form encoded parameters
     let params = ["awesome" : "true"]
 
     //url parameters
-    QwikHttp(urlString: "http://api.com", httpMethod: .get).addUrlParameters(params).send()
+    QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).addUrlParameters(params).send()
 
     //form parameters
-    QwikHttp(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.urlEncoded).send()
+    QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.urlEncoded).send()
 
     //json parameters
-    QwikHttp(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.json).send()
+    QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.json).send()
 ```
 
 You can set the body directly and add your own headers
 ```
     let data =  UIImagePNGRepresentation(someImage);
     let headers = ["Content-Type": "image/png"]
-    QwikHttp(urlString: "http://api.com", httpMethod: .post).setBody(data).addHeaders(headers).send()
+    QwikHttp<String>(urlString: "http://api.com", httpMethod: .post).setBody(data).addHeaders(headers).send()
 ```
 
-### Response Handlers
-Response Handlers are super easy to use too. 
+###Generic
+
+Note QwikHttp<> is Generic. Tell it what type you expect back in the response and it will handle your conversion.
+
+The following Generic Types are supported by default. New types can be added by implementing the QwikConversion Protocol, which converts from NSData
+- NSDictionary: Parsed from a JSON response
+- NSString
+- Bool: True if the request was successful
+- NSNumber
+- NSData
+- Arrays: These are supported via using the type of the array contents and calling the array completion handler as described below.
+- For complex types, extend QwikJson to easily convert between dictionaries and complex objects and arrays
+
 
 #### Typed Result Handlers
-There are various Typed response handlers that correspond to the type of data You are expecting to get back. By letting the api know you want an array of JSON objects parsed into NSDictionaries for example, you can unload all this repetitive parsing logic and let the API do it.
-```
-    QwikHttp(urlString: "http://api.com", httpMethod: .get).dictionaryResponse{ (responseDictionary) -> Void in
-        //the api's JSON response has been parsed into an NSDictionary for you, guaranteed!
-        //so do whatever you want with the dictionary without needing to mess with the response directly
-    }.send()
-```
-The following types are supported:
-- Dictionary: parsed from JSON
-- Array: also parsed from JSON into an array of dictionaries
-- String: parsed from the data response
-- Data: the raw response data, can use used for binary responses
 
-#### Error Handler
-You may also include an error handler to get info on any error that may occur. This will get called if there is a problem sending your request, or if the NSUrlSession returns an error when making a request, if there is a problem parsing the response to the type desired by a typed result handler, or if the response contains a status code that doesn't equal 200 (success).
+Depending on your needs, you may wish to call the objectHandler if you are expecting a single object, or the array handler. If you do not care, you can even use
+A simple (optional) boolean typed result handler.
 
-```
-    QwikHttp(urlString: "http://api.com", httpMethod: .get).dictionaryResponse{ (responseDictionary) -> Void in}
-        .errorResponse{ (errorResponse, error, statusCode) -> Void in
-            //display the NSError data, giving you access to the raw response data parsed into a string
-            //and the result status code to check for invalid permissions and prompt a login.
-        }.send()
-```
-#### Pass / Fail Global Response Handler
+#### Get Object
+
+        QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponse({ (result, error, request) -> Void in
+            if let resultDictionary = result
+            {
+                //have fun with your JSON Parsed into a dictionary!
+            }
+            else if let resultError = error
+            {
+                //handle that error ASAP
+            }
+        )}
+
+#### Get Array
+
+        QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponse({ (result, error, request) -> Void in
+            if let resultArray = result
+            {
+                //have fun with your JSON Parsed into an array of dictionaries
+            }
+            else if let resultError = error
+            {
+                //handle that error ASAP
+            }
+        )}
+
+#### Pass / Fail Boolean Response Handler
+
 You may also add a simple Yes/No global response handler within your send call that will get called whether the request
-Succeeds or fails. This will allow you to perform any logic that should occur in either case, or if you don't need to do
-any specific logic, except for check for failure.
+Succeeds or fails. 
 ```
-QwikHttp(urlString: "http://api.com", httpMethod: .get).dictionaryResponse{ (responseDictionary) -> Void in }
+QwikHttp<String>(urlString: "http://api.com", httpMethod: .get)
     .send { (success) -> Void in
         //if success do x
     }
 ```
-You can access the response data and errors received directly from the NSURLSession response
-```
-QwikHttp(urlString: "http://api.com", httpMethod: .get)
-.send { (success) -> Void in
-//if success do x
-    data = result
-    data = 
 
-}
+#### More Detailed Response
+
+Response objects are saved in the request object and available to use for more low level handling.
+```
+QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponse({ (result, error, request) -> Void in
+    if let responseCode = request.response.responseCode
+    {
+        //check for 403 responses or whatever
+    }
+    if let responseString = request.responseString
+    {
+        //handle the response as a string directly
+    }
+)}
 ```
 
 #### Threading
@@ -96,7 +120,7 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
 ```
     func setup()
     {
-        let self.qwikHttp = QwikHttp(urlString: "http://api.com", httpMethod: .get)
+        let self.qwikHttp = QwikHttp<String>(urlString: "http://api.com", httpMethod: .get)
         run(self.qwikHttp)
         
         //run it again after some delay
@@ -113,16 +137,17 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
 ```
 This also means that if you don't want to use the inline, builder style syntax, you don't have to!
 ```
-    let self.qwikHttp = QwikHttp(urlString: "http://api.com", httpMethod: .get)
+    let self.qwikHttp = QwikHttp<NSData>(urlString: "http://api.com", httpMethod: .get)
     self.qwikHttp.addParams([:])
     self.qwikHttp.addHeaders([:])
     self.qwikHttp.run()
 ```
 
-### Set default time out, request type and cache Policy
+### Set default time out and cache Policy
 
 ```
-    QwikHttp.defaultTimeOut = 200
+    qwikHttp.setTimeOut(200)
+    qwikHttp.setCachePolicy(NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData)
 ```
 
 ## Installation
@@ -143,8 +168,8 @@ There are no external dependencies!
 ## Further Notes
 
 Another essential part of restful requests is parsing the response dictionaries (JSON) into our model objects, and passing model objects into our requests.
-Consider using QwikJson (previosly named QJSonable) in combination with this library to complete your toolset.
-https://github.com/qonceptual/QJsonable
+Consider using QwikJson in combination with this library to complete your toolset.
+https://github.com/qonceptual/QwikJson
 
 Also, checkout the SeaseAssist pod for a ton of great helpers to make writing your iOS code even simpler!
 https://github.com/logansease/SeaseAssist

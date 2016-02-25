@@ -1,5 +1,5 @@
 PODS:
-  - QwikHttp (0.1.0)
+  - QwikHttp (1.0.0)
   - SeaseAssist (0.0.6)
 
 DEPENDENCIES:
@@ -11,7 +11,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  QwikHttp: c1ee7d1438accc240d16886e912adee2b3ff4956
+  QwikHttp: 79e040460aa15a82e86432079a57ff2914118070
   SeaseAssist: 8dc1e2c0c6ba2ccc5a744912e1877d77b59b0aca
 
 COCOAPODS: 0.39.0
