@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import QwikJson
 
 public protocol QwikConversion {
     static func fromData<T>(data : NSData?) -> T? ;
