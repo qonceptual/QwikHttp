@@ -7,14 +7,15 @@
 //
 
 import Foundation
+import QwikJson
 
-public protocol QwikConversion {
+public protocol QwikDataConversion {
     static func fromData<T>(data : NSData?) -> T? ;
     static func arrayFromData<T>(data : NSData?) -> [T]?
 }
 
 
-extension NSNumber : QwikConversion
+extension NSNumber : QwikDataConversion
 {
     public static func fromData<T>(data : NSData?) -> T?{
         if let d = data, string = String(data: d, encoding: NSUTF8StringEncoding), int = Int64(string){
@@ -44,7 +45,7 @@ extension NSNumber : QwikConversion
     }
 }
 
-extension String : QwikConversion{
+extension String : QwikDataConversion{
     
     public static func fromData<T>(data : NSData?) -> T?{
         if let d = data{
@@ -74,7 +75,7 @@ extension String : QwikConversion{
     }
 }
 
-extension Bool : QwikConversion
+extension Bool : QwikDataConversion
 {
     public static func fromData<T>(data : NSData?) -> T?{
         return true as? T
@@ -86,7 +87,7 @@ extension Bool : QwikConversion
     }
 }
 
-extension NSData : QwikConversion
+extension NSData : QwikDataConversion
 {
     public static func fromData<T>(data : NSData?) -> T?{
         return data as? T
@@ -98,7 +99,7 @@ extension NSData : QwikConversion
     }
 }
 
-extension NSDictionary : QwikConversion
+extension NSDictionary : QwikDataConversion
 {
     public static func fromData<T>(data : NSData?) -> T?{
         
@@ -128,3 +129,52 @@ extension NSDictionary : QwikConversion
         return nil
     }
 }
+
+extension QwikJson : QwikDataConversion
+{
+    public static func fromData<T>(data : NSData?) -> T?{
+        
+        if let d = data{
+            //parse our data as and deserialize it into an object
+            do {
+                let JSON = try NSJSONSerialization.JSONObjectWithData(d, options:NSJSONReadingOptions(rawValue: 0))
+                if let dict = JSON as?  [NSObject : AnyObject]
+                {
+                    return self.objectFromDictionary(dict) as? T
+                }
+            }
+            catch _ as NSError {}
+        }
+        
+        return nil
+    }
+    
+    public static func arrayFromData<T>(data : NSData?) -> [T]?
+    {
+        if let d = data{
+            //parse our data as and deserialize it into an object
+            do {
+                let JSON = try NSJSONSerialization.JSONObjectWithData(d, options:NSJSONReadingOptions(rawValue: 0))
+                if let dict = JSON as?  [[NSObject : AnyObject]]
+                {
+                    if let array =  self.arrayForJsonArray(dict, ofClass: self)
+                    {
+                        var resultArray : [T] = []
+                        for(object) in array
+                        {
+                            resultArray.append((object as? T)!)
+                        }
+                        return resultArray
+                    }
+                }
+            }
+            catch _ as NSError {}
+        }
+        
+        return nil
+    }
+}
+
+
+
+

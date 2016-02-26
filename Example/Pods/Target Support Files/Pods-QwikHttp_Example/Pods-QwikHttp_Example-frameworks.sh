@@ -85,9 +85,13 @@ strip_invalid_archs() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods-QwikHttp_Example/QwikHttp.framework"
+  install_framework "Pods-QwikHttp_Example/QwikJson.framework"
   install_framework "Pods-QwikHttp_Example/SeaseAssist.framework"
+  install_framework "Pods-QwikHttp_Example/SwiftSpinner.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods-QwikHttp_Example/QwikHttp.framework"
+  install_framework "Pods-QwikHttp_Example/QwikJson.framework"
   install_framework "Pods-QwikHttp_Example/SeaseAssist.framework"
+  install_framework "Pods-QwikHttp_Example/SwiftSpinner.framework"
 fi

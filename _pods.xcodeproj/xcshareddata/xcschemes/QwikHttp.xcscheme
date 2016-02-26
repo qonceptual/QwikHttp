@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '834DAA743B3ED2A512F51890'
+               BlueprintIdentifier = '0A926F461E7E49A332C94FDC'
                BlueprintName = 'QwikHttp'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'QwikHttp.framework'>

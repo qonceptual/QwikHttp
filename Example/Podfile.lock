@@ -1,6 +1,10 @@
 PODS:
-  - QwikHttp (1.0.0)
+  - QwikHttp (1.0.2):
+    - QwikJson
+    - SwiftSpinner
+  - QwikJson (0.3.0)
   - SeaseAssist (0.0.6)
+  - SwiftSpinner (0.8.0)
 
 DEPENDENCIES:
   - QwikHttp (from `../`)
@@ -11,7 +15,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  QwikHttp: 79e040460aa15a82e86432079a57ff2914118070
+  QwikHttp: 5be3cf2acfefd6ed21d4b5cd23c8b5ac29fef763
+  QwikJson: 78cce1130fd693246bdfd313bc6f8b42d740276f
   SeaseAssist: 8dc1e2c0c6ba2ccc5a744912e1877d77b59b0aca
+  SwiftSpinner: 11c2c5ec7443d92f3026d3067ca8a91d4adef13f
 
 COCOAPODS: 0.39.0

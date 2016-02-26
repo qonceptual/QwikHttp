@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import QwikJson
+import SwiftSpinner
 
 public typealias BooleanCompletionHandler = (success: Bool) -> Void
 
@@ -20,7 +22,7 @@ public enum ParameterType
     case json, formEncoded
 }
 
-public class QwikHttp<T : QwikConversion> {
+public class QwikHttp<T : QwikDataConversion> {
     
     public typealias ResponseHandler = (T?, NSError?, QwikHttp!) -> Void
     public typealias ArrayResponseHandler = ([T]?, NSError?, QwikHttp!) -> Void
@@ -37,6 +39,7 @@ public class QwikHttp<T : QwikConversion> {
     private var body: NSData?
     private var parameterType : ParameterType!
     private var cachePolicy: NSURLRequestCachePolicy!
+    private var loadingTitle: String?
     
     //response variables
     public var responseError : NSError?
@@ -76,6 +79,12 @@ public class QwikHttp<T : QwikConversion> {
         return self
     }
     
+    public func setLoadingTitle(title: String?) -> QwikHttp
+    {
+        self.loadingTitle = title
+        return self
+    }
+    
     public func addUrlParams(params: [String: String]!) -> QwikHttp
     {
         //start our URL Parameters
@@ -90,6 +99,31 @@ public class QwikHttp<T : QwikConversion> {
         urlString = urlString + QwikHttp.paramStringFrom(params)
         return self
     }
+    
+    public func setObject(object: QwikJson?)  -> QwikHttp
+    {
+        if let qwikJson = object,  params = qwikJson.toDictionary() as? [String : AnyObject]
+        {
+            self.addParams(params)
+            self.setParameterType(.json)
+        }
+        return self
+    }
+    
+    public func setObjects<Q : QwikJson>(objects: [Q]?, toModelClass modelClass: Q.Type)  -> QwikHttp
+    {
+        if let array = objects, params = QwikJson.jsonArrayFromArray(array, ofClass: modelClass )
+        {
+            do{
+                let data = try NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
+                self.setBody(data)
+                self.addHeader("Content-Type", value: "application/json")
+            }
+            catch _ as NSError {}
+        }
+        return self
+    }
+    
     public func addParams(params: [String: AnyObject]!) -> QwikHttp
     {
         self.params = combinedDictionary(self.params, with: params)
@@ -226,7 +260,7 @@ public class QwikHttp<T : QwikConversion> {
 }
 
 //this class is used to pool our requests and also to avoid the need to retain our QwikRequest objects
-private class HttpRequestPooler<T : QwikConversion>
+private class HttpRequestPooler<T : QwikDataConversion>
 {
     class func sendRequest(requestParams : QwikHttp<T>!)
     {
@@ -289,6 +323,13 @@ private class HttpRequestPooler<T : QwikConversion>
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
+        var showingSpinner = false
+        if let title = requestParams.loadingTitle
+        {
+            SwiftSpinner.show(title)
+            showingSpinner = true
+        }
+        
         //send our request
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (responseData, urlResponse, error) -> Void in
             
@@ -299,6 +340,11 @@ private class HttpRequestPooler<T : QwikConversion>
             if let responseString = self.getResponseString(responseData)
             {
                 requestParams.responseString = responseString
+            }
+            
+            if showingSpinner
+            {
+                SwiftSpinner.hide()
             }
             
             //set the responseCode

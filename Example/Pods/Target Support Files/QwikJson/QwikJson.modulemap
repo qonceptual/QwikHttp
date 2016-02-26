@@ -1,0 +1,6 @@
+framework module QwikJson {
+  umbrella header "QwikJson-umbrella.h"
+
+  export *
+  module * { export * }
+}

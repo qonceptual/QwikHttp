@@ -42,15 +42,14 @@ You can set the body directly and add your own headers
 
 Note QwikHttp<> is Generic. Tell it what type you expect back in the response and it will handle your conversion.
 
-The following Generic Types are supported by default. New types can be added by implementing the QwikConversion Protocol, which converts from NSData
+The following Generic Types are supported by default. New types can be added by implementing the QwikDataConversion Protocol, which converts from NSData
 - NSDictionary: Parsed from a JSON response
 - NSString
 - Bool: True if the request was successful
 - NSNumber
 - NSData
 - Arrays: These are supported via using the type of the array contents and calling the array completion handler as described below.
-- For complex types, extend QwikJson to easily convert between dictionaries and complex objects and arrays
-
+- For complex types, extend QwikJson to easily convert between dictionaries and complex objects and arrays ( see more below)
 
 #### Typed Result Handlers
 
@@ -114,6 +113,57 @@ QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getRespons
 Response Handlers are always called on the main thread. This means that you don't have to worry about explicity running on the main thread in your completion handlers, which makes your more managable. If, however you are expecting that code running in your response handlers is still running on a background thread, you will be incorrect. Make sure you explicitly run on the background thread if that is the behavior you desire.
 
 
+### QwikJson
+QwikJson, our Json serialization library, is now directly integrated with QwikHttp. This means that there is built in support for a range of complex model objects.
+
+For full documentation on QwikJson, see our repo at https://github.com/qonceptual/QwikJson
+
+Essentially, just subclass QwikJson in a complex model object and you can pass and return those model object directly with QwikHttp.
+
+```
+//declare your complex class with whatever properties
+public Class MyModel : QwikJson
+{
+    var myProperty = "sweet"
+}
+```
+
+Now you can pass and return QwikJson Objects
+```
+let model = MyModel()
+
+QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObject(model).getResponse({ (result, error, request) -> Void in
+    if let result as? Model
+    {
+        //you got a model back, with no parsing code!
+    }
+})
+```
+
+It even works with arrays
+```
+let model = MyModel()
+let models = [model]
+
+QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObjects(models).getArrayResponse({ (result, error, request) -> Void in
+    if let results as? Model
+    {
+        //you got an array of model back, with no parsing code!
+    }
+})
+```
+
+### Loading Indicators
+
+Swift Spinner (https://github.com/icanzilb/SwiftSpinner) is integrated directly into QwikHttp!
+
+Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
+
+```
+QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).setLoadingTitle("Loading").send()
+```
+
+
 ### Retain it and re run it
 since QwikHttp is an object, you can hold on to it, pass it around and run it again!
 
@@ -143,7 +193,7 @@ This also means that if you don't want to use the inline, builder style syntax, 
     self.qwikHttp.run()
 ```
 
-### Set default time out and cache Policy
+### Set time out and cache Policy
 
 ```
     qwikHttp.setTimeOut(200)

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "QwikHttp"
-  s.version          = "1.0.2"
+  s.version          = "1.1.0"
   s.summary          = "QwikHTTP is a simple, super powerful Http Networking library."
   s.description      = <<-DESC
 QwikHttp is based around that making HTTP networking calls to your Rest APIs should be quick,
@@ -32,5 +32,8 @@ DESC
   s.resource_bundles = {
     'QwikHttp' => ['Pod/Assets/*.png']
   }
+
+s.dependency 'QwikJson'
+s.dependency 'SwiftSpinner'
 
 end
