@@ -158,7 +158,7 @@ QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObjects(mod
 
 ### Loading Indicators
 
-Swift Spinner (https://github.com/icanzilb/SwiftSpinner) is integrated directly into QwikHttp!
+Swift Spinner (https://github.com/icanzilb/SwiftSpinner) is integrated directly into QwikHttp providing a beautiful looking loading indicator with no extra code.
 
 Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
 
@@ -166,6 +166,14 @@ Simply call the setLoadingTitle Method on your QwikHttp object and an indicator 
 QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).setLoadingTitle("Loading").send()
 ```
 
+You can set the default title for the loading indicator, passing a nil title will keep it hidden (this is the default behavior), passing a string, even an empty one will make your indicator show and hide automatically by default
+```
+//hide the indicator by default
+QwikHttpDefaults.setDefaultLoadingTitle(nil)
+
+//show the indicator with no title by default
+QwikHttpDefaults.setDefaultLoadingTitle("")
+```
 
 ### Retain it and re run it
 since QwikHttp is an object, you can hold on to it, pass it around and run it again!
@@ -203,7 +211,9 @@ This also means that if you don't want to use the inline, builder style syntax, 
     qwikHttp.setCachePolicy(NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData)
 ```
 
+
 ### Set Defaults
+
 Set for all your requests unless overwritten
 ```
 QwikHttpDefaults.setDefaultTimeOut(300)
