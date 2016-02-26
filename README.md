@@ -204,6 +204,15 @@ This also means that if you don't want to use the inline, builder style syntax, 
     qwikHttp.setCachePolicy(NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData)
 ```
 
+### Set Defaults
+Set for all your requests unless overwritten
+```
+QwikHttpDefaults.setDefaultTimeOut(300)
+QwikHttpDefaults.setDefaultParameterType(.form)
+QwikHttpDefaults.setDefaultLoadingTitle("Loading")
+QwikHttpDefaults.setDefaultCachePolicy(.ReloadIgnoringLocalCacheData)
+```
+
 ## Installation
 
 ###Pods

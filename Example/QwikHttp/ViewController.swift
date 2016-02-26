@@ -17,6 +17,11 @@ class ViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
+        QwikHttpDefaults.setDefaultTimeOut(300)
+        QwikHttpDefaults.setDefaultParameterType(.json)
+        QwikHttpDefaults.setDefaultLoadingTitle("Loading")
+        QwikHttpDefaults.setDefaultCachePolicy(.ReloadIgnoringLocalCacheData)
+        
         sendRequest()
     }
     
@@ -27,7 +32,7 @@ class ViewController: UIViewController {
         if(i == 0)
         {
             //call a get to the itunes search api and find our top overall paid apps on the US Store.
-            QwikHttp<NSDictionary>(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).setLoadingTitle("Loading from iTunes").getResponse({ (result, error, request) -> Void in
+            QwikHttp<NSDictionary>(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).getResponse({ (result, error, request) -> Void in
                 
                 //parse our feed object from the response
                 if let dict = result, let feed = dict["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
@@ -65,7 +70,7 @@ class ViewController: UIViewController {
         else if (i == 2)
         {
             
-            QwikHttp<Restaurant>(urlString: "http://resttest2016.herokuapp.com/restaurants", httpMethod: .get).setLoadingTitle("Searching Restaurants").addUrlParams(["format" : "json"]).getArrayResponse({ (results, error, request) -> Void in
+            QwikHttp<Restaurant>(urlString: "http://resttest2016.herokuapp.com/restaurants", httpMethod: .get).addUrlParams(["format" : "json"]).getArrayResponse({ (results, error, request) -> Void in
                 
                 if let resultsArray = results
                 {

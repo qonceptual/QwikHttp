@@ -17,19 +17,47 @@ public enum HttpRequestMethod : String {
     case get = "GET", post = "POST", delete = "DELETE", put = "PUT"
 }
 
-public enum ParameterType
+//parameter types
+public enum ParameterType : String
 {
-    case json, formEncoded
+    case json = "JSON", formEncoded = "FORM"
 }
 
+//a class to store default values
+public class QwikHttpDefaults
+{
+    private static var defaultTimeOut = 40 as Double
+    private static var defaultCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
+    private static var defaultParameterType = ParameterType.json
+    private static var defaultLoadingTitle : String? = nil
+    
+    public class func setDefaultTimeOut(timeout: Double!)
+    {
+        if(timeout > 0)
+        {
+            defaultTimeOut = timeout
+        }
+    }
+    
+    public class func setDefaultLoadingTitle(title: String?)
+    {
+        defaultLoadingTitle = title
+    }
+    public class func setDefaultCachePolicy(policy: NSURLRequestCachePolicy!)
+    {
+        defaultCachePolicy = policy
+    }
+    public class func setDefaultParameterType(type: ParameterType!)
+    {
+        defaultParameterType = type
+    }
+}
+
+//the main request object
 public class QwikHttp<T : QwikDataConversion> {
     
     public typealias ResponseHandler = (T?, NSError?, QwikHttp!) -> Void
     public typealias ArrayResponseHandler = ([T]?, NSError?, QwikHttp!) -> Void
-    
-    let defaultTimeOut = 40 as Double
-    let defaultCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
-    let defaultParameterType = ParameterType.json
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -38,22 +66,23 @@ public class QwikHttp<T : QwikDataConversion> {
     private var params : [String : AnyObject]!
     private var body: NSData?
     private var parameterType : ParameterType!
-    private var cachePolicy: NSURLRequestCachePolicy!
-    private var loadingTitle: String?
     
     //response variables
     public var responseError : NSError?
     public var responseData : NSData?
     public var response: NSURLResponse?
     public var responseString : NSString?
+    private var sent = false
     
+    //handlers
     private var genericHandler : ResponseHandler?
     private var genericArrayHandler : ArrayResponseHandler?
     private var booleanHandler : BooleanCompletionHandler?
     
-    private var sent = false
-    
+    //class params
     private var timeOut : Double!
+    private var cachePolicy: NSURLRequestCachePolicy!
+    private var loadingTitle: String?
     
     /**** REQUIRED INITIALIZER*****/
     public init(urlString: String!, httpMethod: HttpRequestMethod!)
@@ -62,9 +91,12 @@ public class QwikHttp<T : QwikDataConversion> {
         self.httpMethod = httpMethod
         self.headers = [:]
         self.params = [:]
-        self.parameterType = self.defaultParameterType
-        self.cachePolicy = self.defaultCachePolicy
-        self.timeOut = self.defaultTimeOut
+        
+        //set defaults
+        self.parameterType = QwikHttpDefaults.defaultParameterType
+        self.cachePolicy = QwikHttpDefaults.defaultCachePolicy
+        self.timeOut = QwikHttpDefaults.defaultTimeOut
+        self.loadingTitle = QwikHttpDefaults.defaultLoadingTitle
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
@@ -157,7 +189,7 @@ public class QwikHttp<T : QwikDataConversion> {
         return self
     }
     
-    /********* RESPONSE HANDLERS *************/
+    /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
     
     public func getResponse(handler : ResponseHandler!)
