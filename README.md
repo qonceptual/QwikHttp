@@ -48,7 +48,7 @@ The following Generic Types are supported by default. New types can be added by 
 - Bool: True if the request was successful
 - NSNumber
 - NSData
-- Arrays: These are supported via using the type of the array contents and calling the array completion handler as described below.
+- Arrays: These are supported via using the type of the array contents and calling the array completion handler as described below. Types supporting Arrays by default are Strings, Dictionaries and QwikJson Objects
 - For complex types, extend QwikJson to easily convert between dictionaries and complex objects and arrays ( see more below)
 
 #### Typed Result Handlers
@@ -71,7 +71,7 @@ A simple (optional) boolean typed result handler.
 
 #### Get Array
 
-        QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponse({ (result, error, request) -> Void in
+        QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponseArray({ (result, error, request) -> Void in
             if let resultArray = result
             {
                 //have fun with your JSON Parsed into an array of dictionaries
@@ -87,7 +87,7 @@ A simple (optional) boolean typed result handler.
 You may also add a simple Yes/No global response handler within your send call that will get called whether the request
 Succeeds or fails. 
 ```
-QwikHttp<String>(urlString: "http://api.com", httpMethod: .get)
+QwikHttp<NSData>(urlString: "http://api.com", httpMethod: .get)
     .send { (success) -> Void in
         //if success do x
     }
@@ -106,6 +106,10 @@ QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getRespons
     {
         //handle the response as a string directly
     }
+    if let responseData = request.responseData
+    {
+        //handle the response as nsdata directly
+    }
 )}
 ```
 
@@ -118,7 +122,7 @@ QwikJson, our Json serialization library, is now directly integrated with QwikHt
 
 For full documentation on QwikJson, see our repo at https://github.com/qonceptual/QwikJson
 
-Essentially, just subclass QwikJson in a complex model object and you can pass and return those model object directly with QwikHttp.
+Essentially, just subclass QwikJson in a complex model object and you can pass and return those model objects directly with QwikHttp.
 
 ```
 //declare your complex class with whatever properties
@@ -209,11 +213,6 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod "QwikHttp"
 ```
-
-###Or add the source.
-If you have problems using the pod, or don't want to use cocoaPods, it will be as simple as adding the source from the project into your own. Currently, that is only one file (QwikHttp.swift)
-
-There are no external dependencies!
 
 ## Further Notes
 
