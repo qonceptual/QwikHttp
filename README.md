@@ -84,8 +84,7 @@ A simple (optional) boolean typed result handler.
 
 #### Pass / Fail Boolean Response Handler
 
-You may also add a simple Yes/No global response handler within your send call that will get called whether the request
-Succeeds or fails. 
+You may also use a simple Yes/No success response handler.
 ```
 QwikHttp<NSData>(urlString: "http://api.com", httpMethod: .get)
     .send { (success) -> Void in
@@ -114,7 +113,7 @@ QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getRespons
 ```
 
 #### Threading
-Response Handlers are always called on the main thread. This means that you don't have to worry about explicity running on the main thread in your completion handlers, which makes your more managable. If, however you are expecting that code running in your response handlers is still running on a background thread, you will be incorrect. Make sure you explicitly run on the background thread if that is the behavior you desire.
+Response Handlers are always called on the main thread. This means that you don't have to worry about explicity running on the main thread in your completion handlers, which makes your code more managable. If, however you are expecting that code running in your response handlers is still running on a background thread, you will be incorrect. Make sure you explicitly run on the background thread if that is the behavior you desire.
 
 
 ### QwikJson
