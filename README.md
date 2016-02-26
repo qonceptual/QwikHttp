@@ -204,7 +204,9 @@ This also means that if you don't want to use the inline, builder style syntax, 
     self.qwikHttp.run()
 ```
 
-### Set time out and cache Policy
+## More Optional Configuration
+
+### Set time out and cache Policy per request
 
 ```
     qwikHttp.setTimeOut(200)
@@ -212,7 +214,7 @@ This also means that if you don't want to use the inline, builder style syntax, 
 ```
 
 
-### Set Defaults
+### Set Default Behaviors
 
 Set for all your requests unless overwritten
 ```
