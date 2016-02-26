@@ -121,7 +121,7 @@ QwikJson, our Json serialization library, is now directly integrated with QwikHt
 
 For full documentation on QwikJson, see our repo at https://github.com/qonceptual/QwikJson
 
-Essentially, just subclass QwikJson in a complex model object and you can pass and return those model objects directly with QwikHttp.
+Essentially, just subclass QwikJson in a complex model object and you can serialize and deserialize those model objects automatically with QwikHttp.
 
 ```
 //declare your complex class with whatever properties
@@ -131,7 +131,7 @@ public Class MyModel : QwikJson
 }
 ```
 
-Now you can pass and return QwikJson Objects
+Now you can pass and return QwikJson Objects to and from your ReSTful API with ease!
 ```
 let model = MyModel()
 
