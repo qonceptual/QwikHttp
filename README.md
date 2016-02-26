@@ -149,10 +149,10 @@ It even works with arrays
 let model = MyModel()
 let models = [model]
 
-QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObjects(models).getArrayResponse({ (result, error, request) -> Void in
-    if let results as? Model
+QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObjects(models).getArrayResponse({ (results, error, request) -> Void in
+    if let modelArray = results as? Model
     {
-        //you got an array of model back, with no parsing code!
+        //you got an array of models back, with no parsing code!
     }
 })
 ```
