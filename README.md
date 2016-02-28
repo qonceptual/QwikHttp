@@ -12,7 +12,7 @@ Here are some example of how easy it is to use QwikHttp.
 ###A simple request
 
 ```
-    QwikHttp<NSString>(urlString: "http://api.com", httpMethod: .get).send()
+    QwikHttp(urlString: "http://api.com", httpMethod: .get).send()
 ```
 
 ###Parameters and Headers
@@ -22,25 +22,25 @@ You can set json, url or form encoded parameters
     let params = ["awesome" : "true"]
 
     //url parameters
-    QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).addUrlParameters(params).send()
+    QwikHttp(urlString: "http://api.com", httpMethod: .get).addUrlParameters(params).send()
 
     //form parameters
-    QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.urlEncoded).send()
+    QwikHttp(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.urlEncoded).send()
 
     //json parameters
-    QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.json).send()
+    QwikHttp(urlString: "http://api.com", httpMethod: .get).addParameters(params).setParameterType(.json).send()
 ```
 
 You can set the body directly and add your own headers
 ```
     let data =  UIImagePNGRepresentation(someImage);
     let headers = ["Content-Type": "image/png"]
-    QwikHttp<String>(urlString: "http://api.com", httpMethod: .post).setBody(data).addHeaders(headers).send()
+    QwikHttp(urlString: "http://api.com", httpMethod: .post).setBody(data).addHeaders(headers).send()
 ```
 
 ###Generic
 
-Note QwikHttp<> is Generic. Tell it what type you expect back in the response and it will handle your conversion.
+Note QwikHttp uses Generic completion handlers. Tell it what type you expect back in the response and it will handle your conversion.
 
 The following Generic Types are supported by default. New types can be added by implementing the QwikDataConversion Protocol, which converts from NSData
 - NSDictionary: Parsed from a JSON response
@@ -58,7 +58,7 @@ A simple (optional) boolean typed result handler.
 
 #### Get Object
 
-        QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponse({ (result, error, request) -> Void in
+        QwikHttp(urlString: "http://api.com", httpMethod: .get).getResponse(NSDictionary.self, handler: { (result, error, request) -> Void in
             if let resultDictionary = result
             {
                 //have fun with your JSON Parsed into a dictionary!
@@ -71,7 +71,7 @@ A simple (optional) boolean typed result handler.
 
 #### Get Array
 
-        QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponseArray({ (result, error, request) -> Void in
+        QwikHttp(urlString: "http://api.com", httpMethod: .get).getResponseArray(NSDictionary.self, handler: { (result, error, request) -> Void in
             if let resultArray = result
             {
                 //have fun with your JSON Parsed into an array of dictionaries
@@ -86,7 +86,7 @@ A simple (optional) boolean typed result handler.
 
 You may also use a simple Yes/No success response handler.
 ```
-QwikHttp<NSData>(urlString: "http://api.com", httpMethod: .get)
+QwikHttp(urlString: "http://api.com", httpMethod: .get)
     .send { (success) -> Void in
         //if success do x
     }
@@ -96,7 +96,7 @@ QwikHttp<NSData>(urlString: "http://api.com", httpMethod: .get)
 
 Response objects are saved in the request object and available to use for more low level handling.
 ```
-QwikHttp<NSDictionary>(urlString: "http://api.com", httpMethod: .get).getResponse({ (result, error, request) -> Void in
+QwikHttp(urlString: "http://api.com", httpMethod: .get).getResponse(NSString.self, handler: { (result, error, request) -> Void in
     if let responseCode = request.response.responseCode
     {
         //check for 403 responses or whatever
@@ -135,7 +135,7 @@ Now you can pass and return QwikJson Objects to and from your ReSTful API with e
 ```
 let model = MyModel()
 
-QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObject(model).getResponse({ (result, error, request) -> Void in
+QwikHttp(urlString: "http://api.com", httpMethod: .post).setObject(model).getResponse(MyModel.self, handler: { (result, error, request) -> Void in
     if let result as? Model
     {
         //you got a model back, with no parsing code!
@@ -148,7 +148,7 @@ It even works with arrays
 let model = MyModel()
 let models = [model]
 
-QwikHttp<MyModel>(urlString: "http://api.com", httpMethod: .post).setObjects(models).getArrayResponse({ (results, error, request) -> Void in
+QwikHttp(urlString: "http://api.com", httpMethod: .post).setObjects(models).getArrayResponse(MyModel.self, handler: { (results, error, request) -> Void in
     if let modelArray = results as? Model
     {
         //you got an array of models back, with no parsing code!
@@ -163,7 +163,7 @@ Swift Spinner (https://github.com/icanzilb/SwiftSpinner) is integrated directly 
 Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
 
 ```
-QwikHttp<String>(urlString: "http://api.com", httpMethod: .get).setLoadingTitle("Loading").send()
+QwikHttp(urlString: "http://api.com", httpMethod: .get).setLoadingTitle("Loading").send()
 ```
 
 You can set the default title for the loading indicator, passing a nil title will keep it hidden (this is the default behavior), passing a string, even an empty one will make your indicator show and hide automatically by default
@@ -181,7 +181,7 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
 ```
     func setup()
     {
-        let self.qwikHttp = QwikHttp<String>(urlString: "http://api.com", httpMethod: .get)
+        let self.qwikHttp = QwikHttp(urlString: "http://api.com", httpMethod: .get)
         run(self.qwikHttp)
         
         //run it again after some delay
@@ -198,7 +198,7 @@ since QwikHttp is an object, you can hold on to it, pass it around and run it ag
 ```
 This also means that if you don't want to use the inline, builder style syntax, you don't have to!
 ```
-    let self.qwikHttp = QwikHttp<NSData>(urlString: "http://api.com", httpMethod: .get)
+    let self.qwikHttp = QwikHttp(urlString: "http://api.com", httpMethod: .get)
     self.qwikHttp.addParams([:])
     self.qwikHttp.addHeaders([:])
     self.qwikHttp.run()
@@ -245,7 +245,7 @@ https://github.com/logansease/SeaseAssist
 
 ## Author
 
-Logan Sease, logansease@qonceptual.com
+Logan Sease, lsease@gmail.com
 
 ## License
 

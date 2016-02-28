@@ -54,10 +54,7 @@ public class QwikHttpDefaults
 }
 
 //the main request object
-public class QwikHttp<T : QwikDataConversion> {
-    
-    public typealias ResponseHandler = (T?, NSError?, QwikHttp!) -> Void
-    public typealias ArrayResponseHandler = ([T]?, NSError?, QwikHttp!) -> Void
+public class QwikHttp : NSObject {
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -72,11 +69,10 @@ public class QwikHttp<T : QwikDataConversion> {
     public var responseData : NSData?
     public var response: NSURLResponse?
     public var responseString : NSString?
-    private var sent = false
     
     //handlers
-    private var genericHandler : ResponseHandler?
-    private var genericArrayHandler : ArrayResponseHandler?
+    //private var genericHandler : ResponseHandler?
+    //private var genericArrayHandler : ArrayResponseHandler?
     private var booleanHandler : BooleanCompletionHandler?
     
     //class params
@@ -192,45 +188,81 @@ public class QwikHttp<T : QwikDataConversion> {
     /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
     
-    public func getResponse(handler : ResponseHandler!)
+    public func getResponse<T : QwikDataConversion>(type: T.Type, handler :  (T?, NSError?, QwikHttp!) -> Void!)
     {
-        genericHandler = handler;
-        self.send()
+        HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
+         
+            if let e = error
+            {
+                QwikHttp.mainThread({ () -> () in
+                    handler(nil,e, self)
+                })
+            }
+            else
+            {
+                if let t : T = T.fromData(data)
+                {
+                    QwikHttp.mainThread({ () -> () in
+                        handler(t,nil,self)
+                    })
+                }
+                else
+                {
+                    QwikHttp.mainThread({ () -> () in
+                        handler(nil,NSError(domain: "QwikHttp", code: 500, userInfo: ["Error" : "Could not parse response"]), self)
+                    })
+                }
+            }
+        }
     }
     
-    public func getArrayResponse(handler : ArrayResponseHandler!)
+    public func getArrayResponse<T : QwikDataConversion>(type: T.Type, handler :  ([T]?, NSError?, QwikHttp!) -> Void!)
     {
-        genericArrayHandler = handler;
-        self.send()
+        HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
+            
+            if let e = error
+            {
+                QwikHttp.mainThread({ () -> () in
+                    handler(nil,e, self)
+                })
+            }
+            else
+            {
+                if let t : [T] = T.arrayFromData(data)
+                {
+                    QwikHttp.mainThread({ () -> () in
+                        handler(t,nil,self)
+                    })
+                }
+                else
+                {
+                    QwikHttp.mainThread({ () -> () in
+                        handler(nil,NSError(domain: "QwikHttp", code: 500, userInfo: ["Error" : "Could not parse response"]), self)
+                    })
+                }
+            }
+        }
     }
     
     //Send the request!
     public func send(handler: BooleanCompletionHandler? = nil)
     {
-        self.booleanHandler = handler
-        
-        //if we haven't sent the
-        if(!sent)
-        {
-            self.sent = true
-            HttpRequestPooler.sendRequest(self)
-        }
-        else
-        {
-            let error = NSError(domain: "QwikHttp", code: 0, userInfo: ["Error" : "This request has already been sent. You must reset it before sending again"])
+        HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
-            //call completion handler with an error
-            if let objectHandler = self.genericHandler
+            if let booleanHandler = handler
             {
-                objectHandler(T.fromData(self.responseData),error,self)
-            }
-            else if let arrayHandler = self.genericArrayHandler
-            {
-                arrayHandler(T.arrayFromData(self.responseData),error,self)
-            }else if let booleanHandler = self.booleanHandler
-            {
-                //if we are using the boolean handler, then we called the send
-                booleanHandler(success: false)
+                if let _ = error
+                {
+                    QwikHttp.mainThread({ () -> () in
+                        booleanHandler(success: false)
+                    })
+                }
+                else
+                {
+                    QwikHttp.mainThread({ () -> () in
+                        booleanHandler(success: true)
+                    })
+                }
             }
         }
     }
@@ -243,9 +275,6 @@ public class QwikHttp<T : QwikDataConversion> {
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
-        self.sent = false
-        genericHandler = nil
-        genericArrayHandler = nil
         booleanHandler = nil
     }
     
@@ -280,27 +309,31 @@ public class QwikHttp<T : QwikDataConversion> {
         return string
     }
     
+    private class func mainThread(code: () -> () )
+    {
+        dispatch_async(dispatch_get_main_queue()) {
+            code()
+        }
+    }
+    
     //if we deinit the thread before we ran it, then call an error handler and log this. They probably forgot to send
     deinit
     {
-        if(!self.sent)
-        {
-            NSLog("QwikHttp Error: Request to URL %@ dealloc'ed before it was sent. You likely forgot to call send() or need to add a strong reference to the object.",urlString)
-        }
+
     }
     
 }
 
 //this class is used to pool our requests and also to avoid the need to retain our QwikRequest objects
-private class HttpRequestPooler<T : QwikDataConversion>
+private class HttpRequestPooler
 {
-    class func sendRequest(requestParams : QwikHttp<T>!)
+    class func sendRequest(requestParams : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
     {
         //make sure our request url is valid
         guard let url = NSURL(string: requestParams.urlString)
             else
         {
-            didError(requestParams, error: nil, message: "Invalid URL")
+            handler(nil,nil,NSError(domain: "QwikHTTP", code: 500, userInfo:["Error" : "Invalid URL"]))
             return
         }
         
@@ -324,7 +357,7 @@ private class HttpRequestPooler<T : QwikDataConversion>
             //convert parameters to form encoded values and set to body
             if let params = requestParams.params as? [String : String]
             {
-                request.HTTPBody = QwikHttp<T>.paramStringFrom(params).dataUsingEncoding(NSUTF8StringEncoding)
+                request.HTTPBody = QwikHttp.paramStringFrom(params).dataUsingEncoding(NSUTF8StringEncoding)
                 
                 //set the request type headers
                 //application/x-www-form-urlencoded
@@ -347,7 +380,7 @@ private class HttpRequestPooler<T : QwikDataConversion>
                 request.HTTPBody = data
             }
             catch let JSONError as NSError {
-                didError(requestParams, error: JSONError, message: "Could not serialize Params to JSON")
+                handler(nil,nil,JSONError)
                 return
             }
             
@@ -355,6 +388,7 @@ private class HttpRequestPooler<T : QwikDataConversion>
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         }
         
+        //show our spinner
         var showingSpinner = false
         if let title = requestParams.loadingTitle
         {
@@ -362,120 +396,41 @@ private class HttpRequestPooler<T : QwikDataConversion>
             showingSpinner = true
         }
         
-        //send our request
+        //send our request and do a bunch of common stuff before calling our response handler
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (responseData, urlResponse, error) -> Void in
             
             //set the values straight to the request object so we can read it if needed.
             requestParams.responseData = responseData
             requestParams.responseError = error
-            
+
+            //set our response string
             if let responseString = self.getResponseString(responseData)
             {
                 requestParams.responseString = responseString
             }
             
+            //hide our spinner
             if showingSpinner
             {
                 SwiftSpinner.hide()
             }
             
-            //set the responseCode
+            //check the responseCode to make sure its valid
             if let httpResponse = urlResponse as? NSHTTPURLResponse {
-                
+            
                 requestParams.response = httpResponse
-                
-                if httpResponse.statusCode != 200
+            
+                if httpResponse.statusCode != 200 && error == nil
                 {
-                    didError(requestParams, error: nil, message: "Reponse Code: " )
+                    handler(responseData, urlResponse, NSError(domain: "QwikHttp", code: httpResponse.statusCode, userInfo: ["Error": "Error Response Code"]))
                     return
                 }
             }
             
-            //if we have an error and an error handler, call the error handler.
-            if let e = error
-            {
-                didError(requestParams, error: e, message: nil)
-                return
-            }
-                
-            //otherwise try to parse our response data into the corresponding types for our completion handlers
-            else if let objectHandler = requestParams.genericHandler
-            {
-                if let response = result(responseData)
-                {
-                    self.mainThread({ () -> () in
-                      objectHandler(response, nil, requestParams)
-                        if let boolHandler = requestParams.booleanHandler
-                        {
-                            boolHandler(success: true)
-                        }
-                    })
-                }
-                else
-                {
-                    didError(requestParams, error: nil, message: "Unable to parse response")
-                }
-            }
-            else if let arrayHandler = requestParams.genericArrayHandler
-            {
-                if let response = arrayResult(responseData)
-                {
-                    self.mainThread({ () -> () in
-                        arrayHandler(response, nil, requestParams)
-                        if let boolHandler = requestParams.booleanHandler
-                        {
-                            boolHandler(success: true)
-                        }
-                    })
-                }
-                else
-                {
-                    didError(requestParams, error: nil, message: "Unable to parse response")
-                }
-            }
-            else
-            {
-                //no error, no databack.
-                if let objectHandler = requestParams.genericHandler
-                {
-                    self.mainThread({ () -> () in
-                        objectHandler( nil, nil, requestParams)
-                    })
-                }
-                //no error, no databack.
-                if let arrayHandler = requestParams.genericArrayHandler
-                {
-                    self.mainThread({ () -> () in
-                        arrayHandler(nil, nil, requestParams)
-                    })
-                }
-                if let boolHandler = requestParams.booleanHandler
-                {
-                    self.mainThread({ () -> () in
-                        boolHandler(success: true)
-                    })
-                }
-            }
+            handler(responseData, urlResponse, error)
         })
         
         task.resume()
-    }
-    
-    class func result(from : NSData?) -> T?
-    {
-        return T.fromData(from)
-    }
-    
-    class func arrayResult(from : NSData?) -> [T]?
-    {
-        return T.arrayFromData(from)
-    }
-    
-    private class func mainThread(code: () -> () )
-    {
-        dispatch_async(dispatch_get_main_queue()) {
-            code()
-        }
     }
     
     //a helper to to return an optional string from our ns data
@@ -490,32 +445,6 @@ private class HttpRequestPooler<T : QwikDataConversion>
         }
     }
     
-    class func didError<T>(params: QwikHttp<T>!, error:NSError?, message: String?)
-    {
-        if let respError = error{
-            params.responseError = respError
-        }else if let errorMessage = message
-        {
-            params.responseError = NSError(domain: "QwikHTTP", code: 0, userInfo: ["Error" : errorMessage])
-        }
-        
-        mainThread({ () -> () in
-            //no error, no databack.
-            if let objectHandler = params.genericHandler
-            {
-                objectHandler( nil, params.responseError, params)
-            }
-            //no error, no databack.
-            if let arrayHandler = params.genericArrayHandler
-            {
-                arrayHandler(nil, params.responseError, params)
-            }
-            if let boolHandler = params.booleanHandler
-            {
-                boolHandler(success: false)
-            }
-        })
-    }
 }
 
 

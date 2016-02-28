@@ -32,7 +32,7 @@ class ViewController: UIViewController {
         if(i == 0)
         {
             //call a get to the itunes search api and find our top overall paid apps on the US Store.
-            QwikHttp<NSDictionary>(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).getResponse({ (result, error, request) -> Void in
+            QwikHttp(urlString: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).getResponse(NSDictionary.self, handler: { (result, error, request) -> Void in
                 
                 //parse our feed object from the response
                 if let dict = result, let feed = dict["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
@@ -41,13 +41,12 @@ class ViewController: UIViewController {
                     UIAlertController.showAlertWithTitle("Success", andMessage: String(format: "We Found %li",entries.count), from: self)
                 }
                     
-                    //show an error if we could parse through our dictionary
+                //show an error if we could parse through our dictionary
                 else
                 {
                     UIAlertController.showAlertWithTitle("Failure", andMessage: "Error parsing the result", from: self)
                 }
                 
-                //show an alert with our error if one occurred
             })
         }
         else if (i == 1)
@@ -56,12 +55,16 @@ class ViewController: UIViewController {
             let r = Restaurant()
             r.name = String(format: "Rest Test %i", rand() % 1000)
             
-            QwikHttp<Restaurant>(urlString: "http://resttest2016.herokuapp.com/restaurants", httpMethod: .post).setLoadingTitle("Creating").setObject(r).addUrlParams(["format" : "json"]).getResponse({ (results, error, request) -> Void in
+            QwikHttp(urlString: "http://resttest2016.herokuapp.com/restaurants", httpMethod: .post).setLoadingTitle("Creating").setObject(r).addUrlParams(["format" : "json"]).getResponse(Restaurant.self, handler: { (results, error, request) -> Void in
                 
                 
                 if let restaurant = results, name = restaurant.name
                 {
                     UIAlertController.showAlertWithTitle("Success", andMessage: String(format: "We Found %@",name ), from: self)
+                }
+                else
+                {
+                    UIAlertController.showAlertWithTitle("Failure", andMessage: String(format: "Load error"), from: self)
                 }
                 
             })
@@ -70,16 +73,38 @@ class ViewController: UIViewController {
         else if (i == 2)
         {
             
-            QwikHttp<Restaurant>(urlString: "http://resttest2016.herokuapp.com/restaurants", httpMethod: .get).addUrlParams(["format" : "json"]).getArrayResponse({ (results, error, request) -> Void in
+            QwikHttp(urlString: "http://resttest2016.herokuapp.com/restaurants", httpMethod: .get).addUrlParams(["format" : "json"]).getArrayResponse(Restaurant.self, handler: { (results, error, request) -> Void in
                 
                 if let resultsArray = results
                 {
                     UIAlertController.showAlertWithTitle("Success", andMessage: String(format: "We Found %li",resultsArray.count), from: self)
                 }
+                else
+                {
+                    UIAlertController.showAlertWithTitle("Failure", andMessage: String(format: "Load error"), from: self)
+                }
                 
             })
             
-            i = 0;
+        }
+        
+        else if (i == 3)
+        {
+            
+            QwikHttp(urlString: "http://resttest2016.herokuapp.com/restaurants/1", httpMethod: .get).addUrlParams(["format" : "json"]).send({ (success) -> Void in
+                
+                if success
+                {
+                    UIAlertController.showAlertWithTitle("Load Successful", andMessage:"", from: self)
+                }
+                else
+                {
+                    UIAlertController.showAlertWithTitle("Failure", andMessage: String(format: "Load error"), from: self)
+                }
+                
+            })
+            
+            i = -1;
         }
         
     }
