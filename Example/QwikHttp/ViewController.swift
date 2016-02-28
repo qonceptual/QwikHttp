@@ -90,7 +90,6 @@ class ViewController: UIViewController {
         
         else if (i == 3)
         {
-            
             QwikHttp(urlString: "http://resttest2016.herokuapp.com/restaurants/1", httpMethod: .get).addUrlParams(["format" : "json"]).send({ (success) -> Void in
                 
                 if success

@@ -149,7 +149,7 @@ let model = MyModel()
 let models = [model]
 
 QwikHttp(urlString: "http://api.com", httpMethod: .post).setObjects(models).getArrayResponse(MyModel.self, handler: { (results, error, request) -> Void in
-    if let modelArray = results as? Model
+    if let modelArray = results as? [Model]
     {
         //you got an array of models back, with no parsing code!
     }
