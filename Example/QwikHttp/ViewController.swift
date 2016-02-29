@@ -32,7 +32,7 @@ class ViewController: UIViewController {
         if(i == 0)
         {
             //call a get to the itunes search api and find our top overall paid apps on the US Store.
-            QwikHttp(url: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).getResponse(NSDictionary.self, handler: { (result, error, request) -> Void in
+            QwikHttp(url: "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/toppaidapplications/sf=143441/limit=10/json", httpMethod: HttpRequestMethod.get).getResponse(NSDictionary.self,  { (result, error, request) -> Void in
                 
                 //parse our feed object from the response
                 if let dict = result, let feed = dict["feed"] as? NSDictionary, let entries = feed["entry"] as? NSArray
@@ -55,7 +55,7 @@ class ViewController: UIViewController {
             let r = Restaurant()
             r.name = String(format: "Rest Test %i", rand() % 1000)
             
-            QwikHttp("http://resttest2016.herokuapp.com/restaurants", httpMethod: .post).setLoadingTitle("Creating").setObject(r).addUrlParams(["format" : "json"]).getResponse(Restaurant.self, handler: { (results, error, request) -> Void in
+            QwikHttp("http://resttest2016.herokuapp.com/restaurants", httpMethod: .post).setLoadingTitle("Creating").setObject(r).addUrlParams(["format" : "json"]).getResponse(Restaurant.self, { (results, error, request) -> Void in
                 
                 
                 if let restaurant = results, name = restaurant.name
@@ -73,7 +73,7 @@ class ViewController: UIViewController {
         else if (i == 2)
         {
             
-            QwikHttp("http://resttest2016.herokuapp.com/restaurants", httpMethod: .get).addUrlParams(["format" : "json"]).getArrayResponse(Restaurant.self, handler: { (results, error, request) -> Void in
+            QwikHttp("http://resttest2016.herokuapp.com/restaurants", httpMethod: .get).addUrlParams(["format" : "json"]).getArrayResponse(Restaurant.self, { (results, error, request) -> Void in
                 
                 if let resultsArray = results
                 {

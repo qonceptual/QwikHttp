@@ -193,7 +193,7 @@ public class QwikHttp : NSObject {
     /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
     
-    public func getResponse<T : QwikDataConversion>(type: T.Type, handler :  (T?, NSError?, QwikHttp!) -> Void!)
+    public func getResponse<T : QwikDataConversion>(type: T.Type, _ handler :  (T?, NSError?, QwikHttp!) -> Void!)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
          
@@ -221,7 +221,7 @@ public class QwikHttp : NSObject {
         }
     }
     
-    public func getArrayResponse<T : QwikDataConversion>(type: T.Type, handler :  ([T]?, NSError?, QwikHttp!) -> Void!)
+    public func getArrayResponse<T : QwikDataConversion>(type: T.Type, _ handler :  ([T]?, NSError?, QwikHttp!) -> Void!)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
@@ -250,7 +250,7 @@ public class QwikHttp : NSObject {
     }
     
     //Send the request!
-    public func send(handler: BooleanCompletionHandler? = nil)
+    public func send( handler: BooleanCompletionHandler? = nil)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
