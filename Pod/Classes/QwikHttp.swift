@@ -81,9 +81,14 @@ public class QwikHttp : NSObject {
     private var loadingTitle: String?
     
     /**** REQUIRED INITIALIZER*****/
-    public init(urlString: String!, httpMethod: HttpRequestMethod!)
+    public convenience init(url: String!, httpMethod: HttpRequestMethod!)
     {
-        self.urlString = urlString
+        self.init(url,httpMethod: httpMethod)
+    }
+    
+    public init(_ url: String!, httpMethod: HttpRequestMethod!)
+    {
+        self.urlString = url
         self.httpMethod = httpMethod
         self.headers = [:]
         self.params = [:]

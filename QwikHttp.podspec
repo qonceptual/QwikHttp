@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "QwikHttp"
-  s.version          = "1.3.0"
+  s.version          = "1.3.1"
   s.summary          = "QwikHTTP is a simple, super powerful Http Networking library."
   s.description      = <<-DESC
 QwikHttp is based around that making HTTP networking calls to your Rest APIs should be quick,
