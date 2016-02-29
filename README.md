@@ -60,7 +60,7 @@ A simple (optional) boolean typed result handler.
 
 #### Get Object
 
-        QwikHttp(url: "http://api.com", httpMethod: .get).getResponse(NSDictionary.self, handler: { (result, error, request) -> Void in
+        QwikHttp(url: "http://api.com", httpMethod: .get).getResponse(NSDictionary.self,  { (result, error, request) -> Void in
             if let resultDictionary = result
             {
                 //have fun with your JSON Parsed into a dictionary!
@@ -73,7 +73,7 @@ A simple (optional) boolean typed result handler.
 
 #### Get Array
 
-        QwikHttp("http://api.com", httpMethod: .get).getResponseArray(NSDictionary.self, handler: { (result, error, request) -> Void in
+        QwikHttp("http://api.com", httpMethod: .get).getResponseArray(NSDictionary.self, { (result, error, request) -> Void in
             if let resultArray = result
             {
                 //have fun with your JSON Parsed into an array of dictionaries
@@ -98,7 +98,7 @@ QwikHttp("http://api.com", httpMethod: .get)
 
 Response objects are saved in the request object and available to use for more low level handling.
 ```
-QwikHttp("http://api.com", httpMethod: .get).getResponse(NSString.self, handler: { (result, error, request) -> Void in
+QwikHttp("http://api.com", httpMethod: .get).getResponse(NSString.self,  { (result, error, request) -> Void in
     if let responseCode = request.response.responseCode
     {
         //check for 403 responses or whatever
@@ -137,7 +137,7 @@ Now you can pass and return QwikJson Objects to and from your ReSTful API with e
 ```
 let model = MyModel()
 
-QwikHttp("http://api.com", httpMethod: .post).setObject(model).getResponse(MyModel.self, handler: { (result, error, request) -> Void in
+QwikHttp("http://api.com", httpMethod: .post).setObject(model).getResponse(MyModel.self,  { (result, error, request) -> Void in
     if let result as? Model
     {
         //you got a model back, with no parsing code!
@@ -150,7 +150,7 @@ It even works with arrays
 let model = MyModel()
 let models = [model]
 
-QwikHttp("http://api.com", httpMethod: .post).setObjects(models).getArrayResponse(MyModel.self, handler: { (results, error, request) -> Void in
+QwikHttp("http://api.com", httpMethod: .post).setObjects(models).getArrayResponse(MyModel.self, { (results, error, request) -> Void in
     if let modelArray = results as? [Model]
     {
         //you got an array of models back, with no parsing code!
