@@ -25,6 +25,7 @@ DESC
   s.source           = { :git => "https://github.com/qonceptual/QwikHttp.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/logansease'
 
+  s.tvos.deployment_target = '9.0'
   s.platform     = :ios, '8.0'
   s.requires_arc = true
 
