@@ -3,7 +3,7 @@
 QwikHttp is a robust, yet lightweight and simple to use HTTP networking library. It allows you to customize every aspect
 of your http requests within a single line of code, using a Builder style syntax to keep your code super clean.
 
-QwikHttp is written in Swift, but can be used in both objective-c or swift projects. It utilizes the most recent ios networking api, NSURLSession. QwikHttp is compatible with iOS and tvOS.
+QwikHttp is written in Swift for Swift. It utilizes the most recent ios networking api, NSURLSession. QwikHttp is compatible with iOS and tvOS.
 
 What separates QwikHttp from others is its light weight implementation, its simple syntax and its use of generics and QwikJson for robust serialization and deserialization.
 
