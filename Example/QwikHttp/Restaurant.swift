@@ -9,8 +9,8 @@
 import Foundation
 import QwikJson
 
-class Restaurant : QwikJson{
-    var image_url : String?;
-    var name : String?;
-    var createdAt : DBTimeStamp?;
+@objc class Restaurant : QwikJson{
+    var image_url : String?
+    var name : String?
+    var createdAt : DBTimeStamp?
 }

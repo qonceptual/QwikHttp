@@ -171,6 +171,50 @@ import SwiftSpinner
         }
     }
     
+    @objc public func getDictionaryResponse(handler :  (NSDictionary?, NSError?, QwikHttpObjc!) -> Void)
+    {
+        HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
+            
+            if let e = error
+            {
+                QwikHttpObjc.mainThread({ () -> () in
+                    handler(nil,e, self)
+                })
+            }
+            else
+            {
+                if let d : NSDictionary = NSDictionary.fromData(data)
+                {
+                    QwikHttpObjc.mainThread({ () -> () in
+                        handler(d,nil,self)
+                    })
+                }
+            }
+        }
+    }
+    
+    @objc public func getArrayResponse(handler :  ([NSDictionary]?, NSError?, QwikHttpObjc!) -> Void)
+    {
+        HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
+            
+            if let e = error
+            {
+                QwikHttpObjc.mainThread({ () -> () in
+                    handler(nil,e, self)
+                })
+            }
+            else
+            {
+                if let d : [NSDictionary] = NSDictionary.arrayFromData(data)
+                {
+                    QwikHttpObjc.mainThread({ () -> () in
+                        handler(d,nil,self)
+                    })
+                }
+            }
+        }
+    }
+    
     //Send the request!
     @objc public func send( handler: BooleanCompletionHandler? = nil)
     {
