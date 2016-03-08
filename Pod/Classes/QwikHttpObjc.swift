@@ -10,39 +10,9 @@ import Foundation
 import QwikJson
 import SwiftSpinner
 
-public typealias BooleanCompletionHandler = (success: Bool) -> Void
-
-/****** REQUEST TYPES *******/
-@objc public enum HttpRequestMethod : Int {
-    case Get = 0, Post, Put, Delete
-}
-
-//parameter types
-@objc public enum ParameterType : Int
-{
-    case Json = 0, FormEncoded
-}
-
-//a class to store default values
-@objc public class QwikHttpDefaults : NSObject
-{
-    private(set) static var defaultTimeOut = 40 as Double
-    private(set) static var defaultCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
-    private(set) static var defaultParameterType = ParameterType.Json
-    private(set) static var defaultLoadingTitle : String? = nil
-    
-    public class func setDefaultTimeOut(timeout: Double!)
-    {
-        if(timeout > 0)
-        {
-            defaultTimeOut = timeout
-        }
-    }
-    
-}
 
 //the main request object
-@objc public class QwikHttp : NSObject {
+@objc public class QwikHttpObjc : NSObject {
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -89,24 +59,24 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
-    @objc public func addParam(key : String!, value: String!) -> QwikHttp
+    @objc public func addParam(key : String!, value: String!) -> QwikHttpObjc
     {
         params[key] = value
         return self
     }
-    @objc public func addHeader(key : String!, value: String!) -> QwikHttp
+    @objc public func addHeader(key : String!, value: String!) -> QwikHttpObjc
     {
         headers[key] = value
         return self
     }
     
-    @objc public func setLoadingTitle(title: String?) -> QwikHttp
+    @objc public func setLoadingTitle(title: String?) -> QwikHttpObjc
     {
         self.loadingTitle = title
         return self
     }
     
-    @objc public func addUrlParams(params: [String: String]!) -> QwikHttp
+    @objc public func addUrlParams(params: [String: String]!) -> QwikHttpObjc
     {
         //start our URL Parameters
         if let _ = urlString.rangeOfString("?")
@@ -121,7 +91,7 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
         return self
     }
     
-    @objc public func setObject(object: QwikJson?)  -> QwikHttp
+    @objc public func setObject(object: QwikJson?)  -> QwikHttpObjc
     {
         if let qwikJson = object,  params = qwikJson.toDictionary() as? [String : AnyObject]
         {
@@ -131,35 +101,35 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
         return self
     }
     
-    @objc public func addParams(params: [String: AnyObject]!) -> QwikHttp
+    @objc public func addParams(params: [String: AnyObject]!) -> QwikHttpObjc
     {
         self.params = combinedDictionary(self.params, with: params)
         return self
     }
     
-    @objc public func addHeaders(headers: [String: String]!) -> QwikHttp
+    @objc public func addHeaders(headers: [String: String]!) -> QwikHttpObjc
     {
         self.headers = combinedDictionary(self.headers, with: headers) as! [String : String]
         return self
     }
-    @objc public func setBody(body : NSData!) -> QwikHttp
+    @objc public func setBody(body : NSData!) -> QwikHttpObjc
     {
         self.body = body
         return self;
     }
-    @objc public func setParameterType(parameterType : ParameterType) -> QwikHttp
+    @objc public func setParameterType(parameterType : ParameterType) -> QwikHttpObjc
     {
         self.parameterType = parameterType
         return self;
     }
     
-    @objc public func setCachePolicy(policy: NSURLRequestCachePolicy) -> QwikHttp
+    @objc public func setCachePolicy(policy: NSURLRequestCachePolicy) -> QwikHttpObjc
     {
         cachePolicy = policy
         return self
     }
     
-    @objc public func setTimeOut(timeOut: Double) -> QwikHttp
+    @objc public func setTimeOut(timeOut: Double) -> QwikHttpObjc
     {
         self.timeOut = timeOut
         return self
@@ -168,13 +138,13 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
     /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
     
-    @objc public func getStringResponse(handler :  (String?, NSError?, QwikHttp!) -> Void)
+    @objc public func getStringResponse(handler :  (String?, NSError?, QwikHttpObjc!) -> Void)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
          
             if let e = error
             {
-                QwikHttp.mainThread({ () -> () in
+                QwikHttpObjc.mainThread({ () -> () in
                     handler(nil,e, self)
                 })
             }
@@ -182,7 +152,7 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
             {
                 if let t : String = String.fromData(data)
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    QwikHttpObjc.mainThread({ () -> () in
                         handler(t,nil,self)
                     })
                 }
@@ -191,11 +161,11 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
         }
     }
     
-    @objc public func getDataResponse(handler :  (NSData?, NSError?, QwikHttp!) -> Void)
+    @objc public func getDataResponse(handler :  (NSData?, NSError?, QwikHttpObjc!) -> Void)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
-                QwikHttp.mainThread({ () -> () in
+                QwikHttpObjc.mainThread({ () -> () in
                     handler(data,error, self)
                 })
         }
@@ -210,13 +180,13 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
             {
                 if let _ = error
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    QwikHttpObjc.mainThread({ () -> () in
                         booleanHandler(success: false)
                     })
                 }
                 else
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    QwikHttpObjc.mainThread({ () -> () in
                         booleanHandler(success: true)
                     })
                 }
@@ -300,7 +270,7 @@ private class HttpRequestPooler
         }
     }
     
-    class func sendRequest(requestParams : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+    class func sendRequest(requestParams : QwikHttpObjc!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
     {
         //make sure our request url is valid
         guard let url = NSURL(string: requestParams.urlString)
