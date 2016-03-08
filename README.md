@@ -165,7 +165,7 @@ Swift Spinner (https://github.com/icanzilb/SwiftSpinner) is integrated directly 
 Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
 
 ```
-QwikHttp("http://api.com", httpMethod: .get).setLoadingTitle("Loading").send()
+QwikHttp("http://api.com", httpMethod: .Get).setLoadingTitle("Loading").send()
 ```
 
 You can set the default title for the loading indicator, passing a nil title will keep it hidden (this is the default behavior), passing a string, even an empty one will make your indicator show and hide automatically by default
@@ -227,7 +227,7 @@ QwikHttpDefaults.defaultCachePolicy = .ReloadIgnoringLocalCacheData
 ```
 
 ## Objective C
-QwikHttp is compatible with objective-c by importing its objective-c class file. The objective c version of QwikHttp support most of what the Swift version supports, except for Generics.
+QwikHttp is compatible with objective-c by importing its objective-c class file. The objective c version of QwikHttp supports most of what the Swift version supports, except for Generics.
 Instead of using generic type handlers, you may use the boolean handler or a string, data, dictionary or array (of dictionaries) handler and then utilize QwikJson to deserialize your objects.
 
 ```objective-c
@@ -237,13 +237,15 @@ Instead of using generic type handlers, you may use the boolean handler or a str
 
 -(IBAction)sendRequest:(id)sender
 {
-    [[[[QwikHttpObjc alloc]init:@"http://resttest2016.herokuapp.com/restaurants" httpMethod:HttpRequestMethodGet] addUrlParams:@{@"format" : @"json"}]getArrayResponse:^(NSArray * results, NSError * error, QwikHttpObjc * request) {
+    [[[[QwikHttpObjc alloc]init:@"http://resttest2016.herokuapp.com/restaurants" httpMethod:HttpRequestMethodGet] 
+        addUrlParams:@{@"format" : @"json"}]
+        getArrayResponse:^(NSArray * results, NSError * error, QwikHttpObjc * request) {
 
-    if(results)
-    {
-        NSArray * restaurants = [Restaurant arrayForJsonArray:data ofClass:[Restaurant class]];
-        [UIAlertController showAlertWithTitle:@"Success" andMessage:[NSString stringWithFormat:@"Got %li",(long)restaurants.count] from:self];
-    }
+        if(results)
+        {
+            NSArray * restaurants = [Restaurant arrayForJsonArray:data ofClass:[Restaurant class]];
+            [UIAlertController showAlertWithTitle:@"Success" andMessage:[NSString stringWithFormat:@"Got %li",(long)restaurants.count] from:self];
+        }
     }];
 }
 
