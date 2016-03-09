@@ -129,6 +129,7 @@
 				70E0A0361C8F793B00FC42F5 /* ObjcViewController.h */,
 				70E0A0371C8F793B00FC42F5 /* ObjcViewController.m */,
 				70E0A03D1C90C91400FC42F5 /* QwikLoadingIndicator.swift */,
+				70E0A03B1C90AB3600FC42F5 /* QwikHelper.swift */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
 			name = "Example for QwikHttp";
@@ -141,7 +142,6 @@
 				70E0A0351C8F793B00FC42F5 /* QwikHttp_Example-Bridging-Header.h */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
-				70E0A03B1C90AB3600FC42F5 /* QwikHelper.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACD41AFB9204008FA782 /* Info.plist */,
 			);

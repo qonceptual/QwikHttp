@@ -43,7 +43,7 @@ import SwiftSpinner
         handler(request.responseData, request.response, request.responseError)
         //TODO check to see if response means that the token must be refreshed
         //if the token needs refreshing, refresh it- then save the new token to your auth service
-        //now update the header in the QwikHttp request and reset and run it again. Pass in the 
+        //now update the header in the QwikHttp request and reset and run it again.
         //call the handler with the results of the new request.
     }
     
