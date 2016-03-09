@@ -30,6 +30,7 @@
 -(void)addProperty:(NSString*)key toDictionary:(NSMutableDictionary*)dict;
 
 //override in subclass to specify a nested model that should be deserialized
+//may also be useful if the api is returning a Number ID field but you want to store it as a String
 +(Class)classForKey:(NSString*)key;
 
 //override in subclass to perform some custom deserizliation or change property keys

@@ -8,11 +8,18 @@
 
 import Foundation
 import QwikJson
-import SwiftSpinner
 
+
+//a response interceptor specific to objective c requests.
+//this is used to conditionally intercept the response. See the read me doc for more info
+@objc public protocol QwikHttpObjcResponseInterceptor
+{
+    @objc func shouldInterceptResponse(response: NSURLResponse!) -> Bool
+    @objc func interceptResponseObjc(request : QwikHttpObjc!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+}
 
 //the main request object
-@objc public class QwikHttpObjc : NSObject {
+@objc public class QwikHttpObjc : NSObject, QwikHttpLoadingIndicatorDelegate {
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -21,17 +28,13 @@ import SwiftSpinner
     private var params : [String : AnyObject]!
     private var body: NSData?
     private var parameterType : ParameterType!
+    private var responseThread : ResponseThread!
     
     //response variables
     public var responseError : NSError?
     public var responseData : NSData?
     public var response: NSURLResponse?
     public var responseString : NSString?
-    
-    //handlers
-    //private var genericHandler : ResponseHandler?
-    //private var genericArrayHandler : ArrayResponseHandler?
-    private var booleanHandler : BooleanCompletionHandler?
     
     //class params
     private var timeOut : Double!
@@ -46,16 +49,24 @@ import SwiftSpinner
     
     @objc public init(_ url: String!, httpMethod: HttpRequestMethod)
     {
+        super.init()
+        
         self.urlString = url
         self.httpMethod = httpMethod
         self.headers = [:]
         self.params = [:]
         
         //set defaults
-        self.parameterType = QwikHttpDefaults.defaultParameterType
-        self.cachePolicy = QwikHttpDefaults.defaultCachePolicy
-        self.timeOut = QwikHttpDefaults.defaultTimeOut
-        self.loadingTitle = QwikHttpDefaults.defaultLoadingTitle
+        self.parameterType = QwikHttpConfig.defaultParameterType
+        self.cachePolicy = QwikHttpConfig.defaultCachePolicy
+        self.timeOut = QwikHttpConfig.defaultTimeOut
+        self.loadingTitle = QwikHttpConfig.defaultLoadingTitle
+        self.responseThread = QwikHttpConfig.defaultResponseThread
+        
+        if(QwikHttpConfig.loadingIndicatorDelegate == nil)
+        {
+            QwikHttpConfig.loadingIndicatorDelegate = self
+        }
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
@@ -134,6 +145,11 @@ import SwiftSpinner
         self.timeOut = timeOut
         return self
     }
+    @objc public func setResponseThread(responseThread: ResponseThread) -> QwikHttpObjc
+    {
+        self.responseThread = responseThread
+        return self
+    }
     
     /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
@@ -144,7 +160,7 @@ import SwiftSpinner
          
             if let e = error
             {
-                QwikHttpObjc.mainThread({ () -> () in
+                self.determineThread({ () -> () in
                     handler(nil,e, self)
                 })
             }
@@ -152,11 +168,10 @@ import SwiftSpinner
             {
                 if let t : String = String.fromData(data)
                 {
-                    QwikHttpObjc.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         handler(t,nil,self)
                     })
                 }
-
             }
         }
     }
@@ -165,7 +180,7 @@ import SwiftSpinner
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
-                QwikHttpObjc.mainThread({ () -> () in
+                self.determineThread({ () -> () in
                     handler(data,error, self)
                 })
         }
@@ -177,7 +192,7 @@ import SwiftSpinner
             
             if let e = error
             {
-                QwikHttpObjc.mainThread({ () -> () in
+                self.determineThread({ () -> () in
                     handler(nil,e, self)
                 })
             }
@@ -185,7 +200,7 @@ import SwiftSpinner
             {
                 if let d : NSDictionary = NSDictionary.fromData(data)
                 {
-                    QwikHttpObjc.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         handler(d,nil,self)
                     })
                 }
@@ -199,7 +214,7 @@ import SwiftSpinner
             
             if let e = error
             {
-                QwikHttpObjc.mainThread({ () -> () in
+                self.determineThread({ () -> () in
                     handler(nil,e, self)
                 })
             }
@@ -207,7 +222,7 @@ import SwiftSpinner
             {
                 if let d : [NSDictionary] = NSDictionary.arrayFromData(data)
                 {
-                    QwikHttpObjc.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         handler(d,nil,self)
                     })
                 }
@@ -224,13 +239,13 @@ import SwiftSpinner
             {
                 if let _ = error
                 {
-                    QwikHttpObjc.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         booleanHandler(success: false)
                     })
                 }
                 else
                 {
-                    QwikHttpObjc.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         booleanHandler(success: true)
                     })
                 }
@@ -246,7 +261,20 @@ import SwiftSpinner
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
-        booleanHandler = nil
+    }
+    
+    /*********** LOADING INDICATORS ***********/
+    public func showIndicator(title: String?)
+    {
+        QwikHttpObjc.mainThread { () -> () in
+            QwikHttpLoadingIndicator.shared().showWithTitle(title)
+        }
+    }
+    public func hideIndicator()
+    {
+        QwikHttpObjc.mainThread { () -> () in
+            QwikHttpLoadingIndicator.shared().hide()
+        }
     }
     
     /**** HELPERS ****/
@@ -279,20 +307,30 @@ import SwiftSpinner
         }
         return string
     }
+
+    //conditionally run on the main or background thread
+    private func determineThread(code: () -> () )
+    {
+        if(self.responseThread == .Main)
+        {
+            dispatch_async(dispatch_get_main_queue()) {
+                code()
+            }
+        }
+        else
+        {
+            code()
+        }
+    }
     
+    //run on the main thread
     private class func mainThread(code: () -> () )
     {
         dispatch_async(dispatch_get_main_queue()) {
             code()
         }
     }
-    
-    //if we deinit the thread before we ran it, then call an error handler and log this. They probably forgot to send
-    deinit
-    {
 
-    }
-    
 }
 
 //this class is used to pool our requests and also to avoid the need to retain our QwikRequest objects
@@ -377,9 +415,9 @@ private class HttpRequestPooler
         
         //show our spinner
         var showingSpinner = false
-        if let title = requestParams.loadingTitle
+        if let title = requestParams.loadingTitle, indicatorDelegate = QwikHttpConfig.loadingIndicatorDelegate
         {
-            SwiftSpinner.show(title)
+             indicatorDelegate.showIndicator(title)
             showingSpinner = true
         }
         
@@ -397,9 +435,9 @@ private class HttpRequestPooler
             }
             
             //hide our spinner
-            if showingSpinner
+            if let indicatorDelegate = QwikHttpConfig.loadingIndicatorDelegate where showingSpinner
             {
-                SwiftSpinner.hide()
+                indicatorDelegate.hideIndicator()
             }
             
             //check the responseCode to make sure its valid
@@ -407,6 +445,14 @@ private class HttpRequestPooler
             
                 requestParams.response = httpResponse
             
+                //see if we are configured to use an interceptor and if so, check it to see if we should use it
+                if let interceptor = QwikHttpConfig.responseInterceptorObjc where interceptor.shouldInterceptResponse(httpResponse)
+                {
+                    //call the interceptor and return. The interceptor will call our handler.
+                    interceptor.interceptResponseObjc(requestParams, handler: handler)
+                    return
+                }
+                
                 if httpResponse.statusCode != 200 && error == nil
                 {
                     handler(responseData, urlResponse, NSError(domain: "QwikHttp", code: httpResponse.statusCode, userInfo: ["Error": "Error Response Code"]))

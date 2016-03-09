@@ -8,7 +8,6 @@
 
 import Foundation
 import QwikJson
-import SwiftSpinner
 
 public typealias BooleanCompletionHandler = (success: Bool) -> Void
 
@@ -23,26 +22,58 @@ public typealias BooleanCompletionHandler = (success: Bool) -> Void
     case Json = 0, FormEncoded
 }
 
-//a class to store default values
-@objc public class QwikHttpDefaults : NSObject
+//indicates if the response should be called on the background or main thread
+@objc public enum ResponseThread : Int
+{
+    case Main = 0, Background
+}
+
+//a delegate used to configure and show a custom loading indicator.
+@objc public protocol QwikHttpLoadingIndicatorDelegate
+{
+    @objc func showIndicator(title: String!)
+    @objc func hideIndicator()
+}
+
+
+//This interceptor protocol is in place so that we can register an interceptor to our class to intercept certain
+//responses. This could be useful to check for expired tokens and then retry the request instead of calling the
+//handler with the error. This could also allow you to show the login screen when an unautorized response is returned
+//using this class will help avoid the need to do this constantly on each api call.
+public protocol QwikHttpResponseInterceptor
+{
+     func shouldInterceptResponse(response: NSURLResponse!) -> Bool
+     func interceptResponse(request : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+}
+
+//a class to store default values and configuration for quikHttp
+@objc public class QwikHttpConfig : NSObject
 {
     public private(set) static var defaultTimeOut = 40 as Double
     public static var defaultCachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
     public static var defaultParameterType = ParameterType.Json
     public static var defaultLoadingTitle : String? = nil
+    public static var loadingIndicatorDelegate: QwikHttpLoadingIndicatorDelegate? = nil
+    public static var responseInterceptor: QwikHttpResponseInterceptor? = nil
+    public static var responseInterceptorObjc: QwikHttpObjcResponseInterceptor? = nil
+    public static var defaultResponseThread : ResponseThread = .Main
     
+    //ensure timeout > 0
     public class func setDefaultTimeOut(timeout: Double!)
     {
         if(timeout > 0)
         {
             defaultTimeOut = timeout
         }
+        else
+        {
+            defaultTimeOut = 40
+        }
     }
-    
 }
 
 //the main request object
-public class QwikHttp : NSObject {
+public class QwikHttp : NSObject,QwikHttpLoadingIndicatorDelegate {
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -51,17 +82,13 @@ public class QwikHttp : NSObject {
     private var params : [String : AnyObject]!
     private var body: NSData?
     private var parameterType : ParameterType!
+    private var responseThread : ResponseThread!
     
     //response variables
     public var responseError : NSError?
     public var responseData : NSData?
     public var response: NSURLResponse?
     public var responseString : NSString?
-    
-    //handlers
-    //private var genericHandler : ResponseHandler?
-    //private var genericArrayHandler : ArrayResponseHandler?
-    private var booleanHandler : BooleanCompletionHandler?
     
     //class params
     private var timeOut : Double!
@@ -76,36 +103,51 @@ public class QwikHttp : NSObject {
     
     public init(_ url: String!, httpMethod: HttpRequestMethod!)
     {
+        super.init()
+        
         self.urlString = url
         self.httpMethod = httpMethod
         self.headers = [:]
         self.params = [:]
         
         //set defaults
-        self.parameterType = QwikHttpDefaults.defaultParameterType
-        self.cachePolicy = QwikHttpDefaults.defaultCachePolicy
-        self.timeOut = QwikHttpDefaults.defaultTimeOut
-        self.loadingTitle = QwikHttpDefaults.defaultLoadingTitle
+        self.parameterType = QwikHttpConfig.defaultParameterType
+        self.cachePolicy = QwikHttpConfig.defaultCachePolicy
+        self.timeOut = QwikHttpConfig.defaultTimeOut
+        self.loadingTitle = QwikHttpConfig.defaultLoadingTitle
+        self.responseThread = QwikHttpConfig.defaultResponseThread
+        
+        //if we don't have a loading indicator delegate set, then use this class.
+        if(QwikHttpConfig.loadingIndicatorDelegate == nil)
+        {
+            QwikHttpConfig.loadingIndicatorDelegate = self
+        }
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
+    
+    //add a parameter to the request
     public func addParam(key : String!, value: String!) -> QwikHttp
     {
         params[key] = value
         return self
     }
+    
+    //add a header
     public func addHeader(key : String!, value: String!) -> QwikHttp
     {
         headers[key] = value
         return self
     }
     
+    //set a title to the loading indicator. Set to nil for no indicator
     public func setLoadingTitle(title: String?) -> QwikHttp
     {
         self.loadingTitle = title
         return self
     }
     
+    //add an array of URL parameters
     public func addUrlParams(params: [String: String]!) -> QwikHttp
     {
         //start our URL Parameters
@@ -121,6 +163,7 @@ public class QwikHttp : NSObject {
         return self
     }
     
+    //set a quikJson into the request. Will serialize to json and set the content type.
     public func setObject(object: QwikJson?)  -> QwikHttp
     {
         if let qwikJson = object,  params = qwikJson.toDictionary() as? [String : AnyObject]
@@ -131,6 +174,7 @@ public class QwikHttp : NSObject {
         return self
     }
     
+    //set an array of objects to the request body serialized as json objects.
     public func setObjects<Q : QwikJson>(objects: [Q]?, toModelClass modelClass: Q.Type)  -> QwikHttp
     {
         if let array = objects, params = QwikJson.jsonArrayFromArray(array, ofClass: modelClass )
@@ -145,63 +189,81 @@ public class QwikHttp : NSObject {
         return self
     }
     
+    //add an list of parameters
     public func addParams(params: [String: AnyObject]!) -> QwikHttp
     {
         self.params = combinedDictionary(self.params, with: params)
         return self
     }
     
+    //add a list of headers
     public func addHeaders(headers: [String: String]!) -> QwikHttp
     {
         self.headers = combinedDictionary(self.headers, with: headers) as! [String : String]
         return self
     }
+    
+    //set the body directly
     public func setBody(body : NSData!) -> QwikHttp
     {
         self.body = body
         return self;
     }
+    
+    //set the parameter type
     public func setParameterType(parameterType : ParameterType!) -> QwikHttp
     {
         self.parameterType = parameterType
         return self;
     }
     
+    //set the cache policy
     public func setCachePolicy(policy: NSURLRequestCachePolicy!) -> QwikHttp
     {
         cachePolicy = policy
         return self
     }
+    
+    //set the request time out
     public func setTimeOut(timeOut: Double!) -> QwikHttp
     {
         self.timeOut = timeOut
         return self
     }
+    public func setResponseThread(responseThread: ResponseThread!) -> QwikHttp
+    {
+        self.responseThread = responseThread
+        return self
+    }
     
     /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
-    
+    //get an an object of a generic type back
     public func getResponse<T : QwikDataConversion>(type: T.Type, _ handler :  (T?, NSError?, QwikHttp!) -> Void!)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
+            //check for an error
             if let e = error
             {
-                QwikHttp.mainThread({ () -> () in
+                self.determineThread({ () -> () in
                     handler(nil,e, self)
                 })
             }
             else
             {
+                //try to deserialize our object
                 if let t : T = T.fromData(data)
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         handler(t,nil,self)
                     })
                 }
+                    
+                    //error if we could deserialize
                 else
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         handler(nil,NSError(domain: "QwikHttp", code: 500, userInfo: ["Error" : "Could not parse response"]), self)
                     })
                 }
@@ -209,27 +271,31 @@ public class QwikHttp : NSObject {
         }
     }
     
+    //get an array of a generic type back
     public func getArrayResponse<T : QwikDataConversion>(type: T.Type, _ handler :  ([T]?, NSError?, QwikHttp!) -> Void!)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
+            //check for error
             if let e = error
             {
-                QwikHttp.mainThread({ () -> () in
+                self.determineThread({ () -> () in
                     handler(nil,e, self)
                 })
             }
             else
             {
+                //convert the response to an array of T
                 if let t : [T] = T.arrayFromData(data)
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         handler(t,nil,self)
                     })
                 }
                 else
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    //error if we could not deserialize
+                    self.determineThread({ () -> () in
                         handler(nil,NSError(domain: "QwikHttp", code: 500, userInfo: ["Error" : "Could not parse response"]), self)
                     })
                 }
@@ -237,7 +303,7 @@ public class QwikHttp : NSObject {
         }
     }
     
-    //Send the request!
+    //Send the request with a simple boolean handler, which is optional
     public func send( handler: BooleanCompletionHandler? = nil)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
@@ -246,13 +312,13 @@ public class QwikHttp : NSObject {
             {
                 if let _ = error
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         booleanHandler(success: false)
                     })
                 }
                 else
                 {
-                    QwikHttp.mainThread({ () -> () in
+                    self.determineThread({ () -> () in
                         booleanHandler(success: true)
                     })
                 }
@@ -268,10 +334,26 @@ public class QwikHttp : NSObject {
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
-        booleanHandler = nil
+    }
+    
+    
+    /*********** LOADING INDICATORS ***********/
+    public func showIndicator(title: String?)
+    {
+        QwikHttp.mainThread { () -> () in
+            QwikHttpLoadingIndicator.shared().showWithTitle(title)
+        }
+    }
+    public func hideIndicator()
+    {
+        QwikHttp.mainThread { () -> () in
+            QwikHttpLoadingIndicator.shared().hide()
+        }
     }
     
     /**** HELPERS ****/
+    
+    //combine two dictionaries
     private func combinedDictionary(from: [String:AnyObject]!, with: [String:AnyObject]! ) -> [String:AnyObject]!
     {
         var result = from
@@ -282,6 +364,7 @@ public class QwikHttp : NSObject {
         return result
     }
     
+    //create a url parameter string
     class func paramStringFrom(from: [String : String]!) -> String!
     {
         var string = ""
@@ -302,17 +385,27 @@ public class QwikHttp : NSObject {
         return string
     }
     
+    //determine if we should run on the main or background thread and run it conditionally
+    private func determineThread(code: () -> () )
+    {
+        if(self.responseThread == .Main)
+        {
+            dispatch_async(dispatch_get_main_queue()) {
+                code()
+            }
+        }
+        else
+        {
+            code()
+        }
+    }
+    
+    //run on the main thread
     private class func mainThread(code: () -> () )
     {
         dispatch_async(dispatch_get_main_queue()) {
             code()
         }
-    }
-    
-    //if we deinit the thread before we ran it, then call an error handler and log this. They probably forgot to send
-    deinit
-    {
-        
     }
     
 }
@@ -383,9 +476,9 @@ private class HttpRequestPooler
         
         //show our spinner
         var showingSpinner = false
-        if let title = requestParams.loadingTitle
+        if let title = requestParams.loadingTitle, indicatorDelegate = QwikHttpConfig.loadingIndicatorDelegate
         {
-            SwiftSpinner.show(title)
+            indicatorDelegate.showIndicator(title)
             showingSpinner = true
         }
         
@@ -403,9 +496,9 @@ private class HttpRequestPooler
             }
             
             //hide our spinner
-            if showingSpinner
+            if let indicatorDelegate = QwikHttpConfig.loadingIndicatorDelegate where showingSpinner == true
             {
-                SwiftSpinner.hide()
+                indicatorDelegate.hideIndicator()
             }
             
             //check the responseCode to make sure its valid
@@ -413,6 +506,15 @@ private class HttpRequestPooler
                 
                 requestParams.response = httpResponse
                 
+                //see if we are configured to use an interceptor and if so, check it to see if we should use it
+                if let interceptor = QwikHttpConfig.responseInterceptor where interceptor.shouldInterceptResponse(httpResponse)
+                {
+                    //call the interceptor and return. The interceptor will call our handler.
+                    interceptor.interceptResponse(requestParams, handler: handler)
+                    return
+                }
+                
+                //error for invalid response
                 if httpResponse.statusCode != 200 && error == nil
                 {
                     handler(responseData, urlResponse, NSError(domain: "QwikHttp", code: httpResponse.statusCode, userInfo: ["Error": "Error Response Code"]))
@@ -426,6 +528,7 @@ private class HttpRequestPooler
         task.resume()
     }
     
+    //convert our enum to a string used for the request
     private class func paramTypeToString(type: HttpRequestMethod) -> String!
     {
         switch(type)

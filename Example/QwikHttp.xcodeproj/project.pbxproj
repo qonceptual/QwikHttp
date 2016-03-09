@@ -16,6 +16,7 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		701C553A1C809CE0000F3F51 /* Restaurant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701C55391C809CE0000F3F51 /* Restaurant.swift */; };
 		70E0A0381C8F793B00FC42F5 /* ObjcViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 70E0A0371C8F793B00FC42F5 /* ObjcViewController.m */; };
+		70E0A03C1C90AB3600FC42F5 /* QwikHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E0A03B1C90AB3600FC42F5 /* QwikHelper.swift */; };
 		73CA4DEA106A9F462659BDB1 /* Pods_QwikHttp_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5E4CF43421E008BECCFF5C1 /* Pods_QwikHttp_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +49,7 @@
 		70E0A0351C8F793B00FC42F5 /* QwikHttp_Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QwikHttp_Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		70E0A0361C8F793B00FC42F5 /* ObjcViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcViewController.h; sourceTree = "<group>"; };
 		70E0A0371C8F793B00FC42F5 /* ObjcViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjcViewController.m; sourceTree = "<group>"; };
+		70E0A03B1C90AB3600FC42F5 /* QwikHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QwikHelper.swift; sourceTree = "<group>"; };
 		A3EFA19D3040F7B739CDE681 /* Pods-QwikHttp_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QwikHttp_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QwikHttp_Example/Pods-QwikHttp_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		A4C8ED41D6C8587E19549B4A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		D131DB4DDB4C0FFDCCE79545 /* Pods-QwikHttp_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QwikHttp_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QwikHttp_Tests/Pods-QwikHttp_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -122,13 +124,9 @@
 				701C552F1C809C23000F3F51 /* Model */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
-				607FACD91AFB9204008FA782 /* Main.storyboard */,
-				607FACDC1AFB9204008FA782 /* Images.xcassets */,
-				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
-				607FACD31AFB9204008FA782 /* Supporting Files */,
 				70E0A0361C8F793B00FC42F5 /* ObjcViewController.h */,
 				70E0A0371C8F793B00FC42F5 /* ObjcViewController.m */,
-				70E0A0351C8F793B00FC42F5 /* QwikHttp_Example-Bridging-Header.h */,
+				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
 			name = "Example for QwikHttp";
 			path = QwikHttp;
@@ -137,6 +135,11 @@
 		607FACD31AFB9204008FA782 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				70E0A0351C8F793B00FC42F5 /* QwikHttp_Example-Bridging-Header.h */,
+				607FACDC1AFB9204008FA782 /* Images.xcassets */,
+				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
+				70E0A03B1C90AB3600FC42F5 /* QwikHelper.swift */,
+				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACD41AFB9204008FA782 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -377,6 +380,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E0A03C1C90AB3600FC42F5 /* QwikHelper.swift in Sources */,
 				70E0A0381C8F793B00FC42F5 /* ObjcViewController.m in Sources */,
 				701C553A1C809CE0000F3F51 /* Restaurant.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,

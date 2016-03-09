@@ -10,9 +10,9 @@ In our ReSTful API world, we are constantly passing JSON objects to our api and 
 
 To solve this, I introduce QwikJson. An amazingly powerful and simple library for serializing and deserializing json objects.
 
-Simple have your model classes extend the QwikJson class and the world shall become your oyster.
+Simply have your model classes extend QwikJson and the world shall become your oyster.
 
-QwikJson makes converting objects to dictionaries and arrays of dictionaries a breeze. It includes support for nested model objects, nested array model objects, multiple date serializers, easily storing and loading objects from user defaults and converting your array arrays and dictionaries to json Strings and vice versa.
+QwikJson makes converting objects to dictionaries and arrays of dictionaries (and Vice Versa) a breeze. It includes support for nested model objects, nested array model objects, multiple styles of dates and times, simple storage to NSUserDefaults and conversion to and from JSON Strings.
 
 
 ## Installation
@@ -29,12 +29,7 @@ And import the following Header file
 #import "QwikJson.h"
 ```
 
-This pod will work if your project uses objective-c or Swift.
-- For best results with an objective-c Project, add the SeaseAssist.h import into your .pch file and you will not need to import SeaseAssist into each of your classes that references it.
-- For Similiar result with Swift, you should NOT include the use_frameworks! in your pod file and add a bridging header that includes the library. If you must use_frameworks!, then you need to include SeaseAssist in any class that uses its functions.
--- add a new header file to yoour project named ProjectName-Bridging-Header.h
--- add '#import <SeaseAssist/SeaseAssist.h>' to your header file
--- in your Target Build settings -> Swift Compiler Code Generation -> Objective-C Bridging Header, add a reference to the newly created file. Should be [ProjectName/ProjectName-Bridging-Header.h]
+This pod is written in Objective-C but works great with Swift projects as well.
 
 ## Usage
 
@@ -56,7 +51,7 @@ menu = [Menu objectFromDictionary:dictionary];
 dictionary = [menu toDictionary];
 ```
 
-Use Nested Objects (even nested arrays) use custom date serlizers
+Use Nested Objects (even nested arrays) and custom date serlizers
 ```objective-c
 //restaurant.h
 @interface Restaurant : QwikJson
@@ -69,16 +64,16 @@ Use Nested Objects (even nested arrays) use custom date serlizers
 //restaurant.m
 +(Class)classForKey:(NSString*)key
 {
-if([key isEqualToString:@"menus"])
-{
-return [Menu class];
-}
-if([key isEqualToString:@"createdAt"])
-{
-return [DBTimeStamp class];
-}
+    if([key isEqualToString:@"menus"])
+    {
+        return [Menu class];
+    }
+    if([key isEqualToString:@"createdAt"])
+    {
+        return [DBTimeStamp class];
+    }
 
-return [super classForKey:key];
+    return [super classForKey:key];
 }
 
 ```
@@ -87,34 +82,34 @@ Customize field names if they don't match the database
 ```objective-c
 +(Class)classForKey:(NSString*)key
 {
-if([key isEqualToString:@"menu_items"] || [key isEqualToString:@"menuItems"])
-{
-return [MenuItem class];
-}
-return [super classForKey:key];
+    if([key isEqualToString:@"menu_items"] || [key isEqualToString:@"menuItems"])
+    {
+        return [MenuItem class];
+    }
+    return [super classForKey:key];
 }
 
 //override in subclass to perform some custom deserizliation or change property keys
 -(void)writeObjectFrom:(NSDictionary*)inputDictionary forKey:(NSString*)key toProperty:(NSString*)property
 {
-//adjust the property name since the database is formatted with _'s instead of camel case
-if([property isEqualToString:@"menu_items"])
-{
-property = @"menuItems";
-}
+    //adjust the property name since the database is formatted with _'s instead of camel case
+    if([property isEqualToString:@"menu_items"])
+    {
+        property = @"menuItems";
+    }
 
-[super writeObjectFrom:inputDictionary forKey:key toProperty:property];
+    [super writeObjectFrom:inputDictionary forKey:key toProperty:property];
 }
 
 //override in subclass to specify a new key or perform some custom action on serialize
 -(void)serializeObject:(NSObject*)object withKey:(NSString*)key toDictionary:(NSMutableDictionary*)dictionary
 {
-//adjust the property name since the database is formatted with _'s instead of camel case
-if([key isEqualToString:@"menuItems"])
-{
-key = @"menu_items";
-}
-[super serializeObject:object withKey:key toDictionary:dictionary];
+    //adjust the property name since the database is formatted with _'s instead of camel case
+    if([key isEqualToString:@"menuItems"])
+    {
+        key = @"menu_items";
+    }
+    [super serializeObject:object withKey:key toDictionary:dictionary];
 }
 ```
 
@@ -139,22 +134,26 @@ Convert to and from Strings
 
 
 ## Supported Field Types Types
--Boolean
--NSString
--NSArray
--NSNumber
+- Boolean
+- NSString
+- NSArray
+- NSNumber
 
-### Custom Date Serializers
+### Custom Date Serializers, handle parsing various date / time formats
+
 ####DBDate            
--2015-12-30
-####DBDateTime        
--2015-01-01T10:15:30 
-####DBDateTimeStamp   
--0312345512
-####DBTime            
--12:00:00
+2015-12-30
 
-Note that you can customize the date formats by calling
+####DBDateTime        
+2015-01-01T10:15:30 
+
+####DBDateTimeStamp   
+0312345512
+
+####DBTime            
+12:00:00
+
+Note that you can customize the date formats by calling setDateFormat on the date class.
 ```objective-c
 [DBDate setDateFormat:@"MM/DD/YYYY"];
 ```
@@ -162,6 +161,17 @@ Note that you can customize the date formats by calling
 ## Android
 
 Inside this repo and in the android directory, you will also find a very similar class, QwikJson.java that offers very similar functionality for Android and other Java Platforms.
+
+## Further Notes
+
+In addition to parsing and serializing JSON, the other essential pieice of communicatiing with RESTful APIs is a good
+networking library.
+Consider using QwikHttp in combination with this library to complete your toolset.
+https://github.com/qonceptual/QwikHttp
+
+Also, checkout the SeaseAssist pod for a ton of great helpers to make writing your iOS code even simpler!
+https://github.com/logansease/SeaseAssist
+
 
 ## Author
 

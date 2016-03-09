@@ -1,11 +1,16 @@
 # QwikHttp
 
-QwikHttp is a robust, yet lightweight and simple to use HTTP networking library. It allows you to customize every aspect
-of your http requests within a single line of code, using a Builder style syntax to keep your code super clean.
+QwikHttp is a robust, yet lightweight and simple to use HTTP networking library. It allows you to customize every aspect of your http requests within a single line of code, using a Builder style syntax to keep your code super clean.
 
-What separates QwikHttp from others is its light weight implementation, its simple syntax and its use of generics and QwikJson for robust serialization and deserialization.
+What separates QwikHttp from other Networking Libraries is its: 
+- light weight implementation 
+- simple usage syntax
+- use of generics and QwikJson for robust serialization and deserialization
+- broad multi-platform support
+- simple, yet robust loading indicator implementation
+- response interceptors provide a method to handle unauthorized responses and token refreshing with ease.
 
-QwikHttp is written in Swift for Swift. It utilizes the most recent ios networking api, NSURLSession. QwikHttp is compatible with iOS and tvOS. There is an objective C version of QwikHttp available as well, although it is toned down since objective-c is not support Swift generics. 
+QwikHttp is written in Swift but works (without generics) great with objective-c. It utilizes the most recent ios networking API, NSURLSession. QwikHttp is compatible with iOS 7+, tvOS, WatchOS 2 and OSX 10.8+. 
 
 ## Usage
 
@@ -115,8 +120,13 @@ QwikHttp("http://api.com", httpMethod: .Get).getResponse(NSString.self,  { (resu
 ```
 
 #### Threading
-Response Handlers are always called on the main thread. This means that you don't have to worry about explicity running on the main thread in your completion handlers, which makes your code more managable. If, however you are expecting that code running in your response handlers is still running on a background thread, you will be incorrect. Make sure you explicitly run on the background thread if that is the behavior you desire.
+You can tell QwikJson if you'd prefer your response handlers to occur on the main thread of the background thread.
+By default, all response handlers will be called on the Main Thread, however you can easily change this default and set it on a per request level.
 
+```objective-c
+QwikHttpConfig.setDefaultResponseThread(.Background)
+qwikHttp.setResponseThread(.Main)
+```
 
 ### QwikJson
 QwikJson, our Json serialization library, is now directly integrated with QwikHttp. This means that there is built in support for a range of complex model objects.
@@ -160,8 +170,6 @@ QwikHttp("http://api.com", httpMethod: .post).setObjects(models).getArrayRespons
 
 ### Loading Indicators
 
-Swift Spinner (https://github.com/icanzilb/SwiftSpinner) is integrated directly into QwikHttp providing a beautiful looking loading indicator with no extra code.
-
 Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
 
 ```
@@ -171,10 +179,67 @@ QwikHttp("http://api.com", httpMethod: .Get).setLoadingTitle("Loading").send()
 You can set the default title for the loading indicator, passing a nil title will keep it hidden (this is the default behavior), passing a string, even an empty one will make your indicator show and hide automatically by default
 ```
 //hide the indicator by default
-QwikHttpDefaults.setDefaultLoadingTitle(nil)
+QwikHttpConfig.setDefaultLoadingTitle(nil)
 
 //show the indicator with no title by default
-QwikHttpDefaults.setDefaultLoadingTitle("")
+QwikHttpConfig.setDefaultLoadingTitle("")
+```
+
+####Custom Loading Indicators
+QwikHttp will allow you to easily use your own loading indicator class by setting the QwikHttpLoadingIndicatorDelegate on QwikHttpConfig. You can do this to use cool indicators like MBProgressHUD or SwiftSpinner but let QwikHttp handle showing and hiding them so you don't have to.
+
+```swift
+import SwiftSpinner
+public class QwikHelper :  QwikHttpLoadingIndicatorDelegate
+{
+    public class func shared() -> QwikHelper {
+        struct Singleton {
+            static let instance = QwikHelper()
+        }
+        QwikHttpConfig.indicatorDelegate = Singleton.instance
+        return Singleton.instance
+    }
+
+    @objc public func showIndicator(title: String!)
+    {
+        SwiftSpinner.show(title)
+    }
+
+    @objc public func hideIndicator()
+    {
+        SwiftSpinner.hide()
+    }
+}
+```
+
+###Response Interceptor
+QwikHttp allows you to set a response interceptor that can selectively be called before each response is returned. Using this interceptor, you can do cool things like alter your responses in some way, or even cleanly handle unauthorized responses, allowing you to refresh an oAuth token or show the login screen under certain conditions.
+
+```swift
+public class QwikHelper : QwikHttpResponseInterceptor
+{
+    public class func shared() -> QwikHelper {
+        struct Singleton {
+            static let instance = QwikHelper()
+        }
+        QwikHttpConfig.responseInterceptor = Singleton.instance
+        return Singleton.instance
+    }
+
+    @objc public func shouldInterceptResponse(response: NSURLResponse!) -> Bool
+    {
+        //TODO check for an unautorized response and return true if so
+        return false
+    }
+
+    @objc public func interceptResponse(request : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+    {
+        //TODO check to see if response means that the token must be refreshed
+        //if the token needs refreshing, refresh it- then save the new token to your auth service
+        //now update the header in the QwikHttp request and reset and run it again. Pass in the 
+        //call the handler with the results of the new request.
+    }
+}
 ```
 
 ### Retain it and re run it
@@ -220,15 +285,15 @@ This also means that if you don't want to use the inline, builder style syntax, 
 
 Set for all your requests unless overwritten
 ```
-QwikHttpDefaults.defaultTimeOut = 300
-QwikHttpDefaults.defaultParameterType = .FormEncoded
-QwikHttpDefaults.defaultLoadingTitle = "Loading"
-QwikHttpDefaults.defaultCachePolicy = .ReloadIgnoringLocalCacheData
+QwikHttpConfig.defaultTimeOut = 300
+QwikHttpConfig.defaultParameterType = .FormEncoded
+QwikHttpConfig.defaultLoadingTitle = "Loading"
+QwikHttpConfig.defaultCachePolicy = .ReloadIgnoringLocalCacheData
 ```
 
 ## Objective C
 QwikHttp is compatible with objective-c by importing its objective-c class file. The objective c version of QwikHttp supports most of what the Swift version supports, except for Generics.
-Instead of using generic type handlers, you may use the boolean handler or a string, data, dictionary or array (of dictionaries) handler and then utilize QwikJson to deserialize your objects.
+Instead of using generic type handlers, you may use the boolean handler or a string, data, dictionary or array (of dictionaries) handler and then utilize QwikJson to deserialize your objects if necessary.
 
 ```objective-c
 #import "QwikHttp-Swift.h"

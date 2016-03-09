@@ -69,6 +69,7 @@
 		6C4ECB758B8991B40509CD89D4546C8F /* UIImage+Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 15EBCE8CE39F1768E4F944BD5E648E50 /* UIImage+Helpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6DA7FDB94CF4B183FB0F9D08936256BA /* UIButton+TitleHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E7112D838CFD0C7AA9AC5A9EC8B18FEC /* UIButton+TitleHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		70B7D73257C82ACC8E8511CAE6D9B945 /* NSArrayDictionary+Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 816BAE506DFF131A006949ABAAE30227 /* NSArrayDictionary+Json.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		70E0A0341C8F75B800FC42F5 /* QwikHttpObjc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E0A0331C8F75B800FC42F5 /* QwikHttpObjc.swift */; };
 		715BE99114DC0D75024829C5C2505E6F /* QwikJson.h in Headers */ = {isa = PBXBuildFile; fileRef = EE96CB862F1DE23FB7E514FED8AC1DCB /* QwikJson.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		71F9F72DFE322730C6BD3E317058824D /* UIView+Rounding.m in Sources */ = {isa = PBXBuildFile; fileRef = 89290C849B7BF68A2C7E2B479C86FD9E /* UIView+Rounding.m */; };
 		72D04616AC84AC78D9AD74FDC817818E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A82C7F4008236FFCDF3F75D3EE253B7E /* AVFoundation.framework */; };
@@ -345,6 +346,7 @@
 		6CD5504EFAF9B13A7FD0C4747C859487 /* SwiftSpinner-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftSpinner-umbrella.h"; sourceTree = "<group>"; };
 		6D0A1F043C6CE59B9A172D4B83C717D0 /* UIViewController+Presentation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Presentation.h"; path = "Pod/Classes/UIViewController+Presentation.h"; sourceTree = "<group>"; };
 		6E486946A19D7A329D04AF139D9F14B3 /* UIView+Search.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+Search.m"; path = "Pod/Classes/UIView+Search.m"; sourceTree = "<group>"; };
+		70E0A0331C8F75B800FC42F5 /* QwikHttpObjc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QwikHttpObjc.swift; sourceTree = "<group>"; };
 		72EE283D2CEFE6C97EADEF51CD43405B /* NSDate+Helpers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSDate+Helpers.m"; path = "Pod/Classes/NSDate+Helpers.m"; sourceTree = "<group>"; };
 		744A8849951591095486FF45E8600D07 /* NSFileManager+Helpers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSFileManager+Helpers.m"; path = "Pod/Classes/NSFileManager+Helpers.m"; sourceTree = "<group>"; };
 		74AF048CF6C5F0138BFBFDFC655A19F3 /* Pods_QwikHttp_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QwikHttp_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -565,6 +567,7 @@
 		3CE8A2049C07EDB60ACE7DEA9B6A33F7 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				70E0A0331C8F75B800FC42F5 /* QwikHttpObjc.swift */,
 				CFCE8A4D9AF386C73B70CB2FCE31881A /* QwikDataConversion.swift */,
 				27AEC263A90D2CB10FC28A953A5EE681 /* QwikHttp.swift */,
 			);
@@ -1246,6 +1249,7 @@
 				8CBFB4336FF96295A90D74CB6169171B /* QwikDataConversion.swift in Sources */,
 				5C1261FBA8093337CAC33C3264BE8C6F /* QwikHttp-dummy.m in Sources */,
 				2604EFCF0E615F31401367AE72C0EC8C /* QwikHttp.swift in Sources */,
+				70E0A0341C8F75B800FC42F5 /* QwikHttpObjc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

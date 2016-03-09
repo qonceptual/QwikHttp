@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "QwikHttp"
-  s.version          = "1.4.0"
+  s.version          = "1.6.0"
   s.summary          = "QwikHTTP is a simple, super powerful Http Networking library."
   s.description      = <<-DESC
 QwikHttp is based around that making HTTP networking calls to your Rest APIs should be quick,
@@ -26,7 +26,9 @@ DESC
   s.social_media_url = 'https://twitter.com/logansease'
 
   s.tvos.deployment_target = '9.0'
-  s.platform     = :ios, '8.0'
+  s.ios.deployment_target = '7.0'
+  s.osx.deployment_target = '10.8'
+  s.watchos.deployment_target = '2.0'
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'
@@ -34,7 +36,6 @@ DESC
     'QwikHttp' => ['Pod/Assets/*.png']
   }
 
-s.dependency 'QwikJson'
-s.dependency 'SwiftSpinner'
+  s.dependency 'QwikJson'
 
 end
