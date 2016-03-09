@@ -19,7 +19,7 @@ import QwikJson
 }
 
 //the main request object
-@objc public class QwikHttpObjc : NSObject, QwikHttpLoadingIndicatorDelegate {
+@objc public class QwikHttpObjc : NSObject {
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -62,11 +62,6 @@ import QwikJson
         self.timeOut = QwikHttpConfig.defaultTimeOut
         self.loadingTitle = QwikHttpConfig.defaultLoadingTitle
         self.responseThread = QwikHttpConfig.defaultResponseThread
-        
-        if(QwikHttpConfig.loadingIndicatorDelegate == nil)
-        {
-            QwikHttpConfig.loadingIndicatorDelegate = self
-        }
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
@@ -261,20 +256,6 @@ import QwikJson
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
-    }
-    
-    /*********** LOADING INDICATORS ***********/
-    public func showIndicator(title: String?)
-    {
-        QwikHttpObjc.mainThread { () -> () in
-            QwikHttpLoadingIndicator.shared().showWithTitle(title)
-        }
-    }
-    public func hideIndicator()
-    {
-        QwikHttpObjc.mainThread { () -> () in
-            QwikHttpLoadingIndicator.shared().hide()
-        }
     }
     
     /**** HELPERS ****/

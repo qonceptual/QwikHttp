@@ -58,10 +58,7 @@ class ViewController: UIViewController {
             })
         }
         else if (i == 1)
-        {
-            //replace the custom indicator with the default loader
-            QwikHttpConfig.loadingIndicatorDelegate = nil
-            
+        {            
             let r = Restaurant()
             r.name = String(format: "Rest Test %i", rand() % 1000)
             

@@ -38,7 +38,7 @@ import SwiftSpinner
         //TODO check for an unautorized response and return true if so
         return true
     }
-    @objc public func interceptResponse(request : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+    public func interceptResponse(request : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
     {
         handler(request.responseData, request.response, request.responseError)
         //TODO check to see if response means that the token must be refreshed

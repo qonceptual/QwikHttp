@@ -73,7 +73,7 @@ public protocol QwikHttpResponseInterceptor
 }
 
 //the main request object
-public class QwikHttp : NSObject,QwikHttpLoadingIndicatorDelegate {
+public class QwikHttp {
     
     /***** REQUEST VARIABLES ******/
     private var urlString : String!
@@ -103,8 +103,6 @@ public class QwikHttp : NSObject,QwikHttpLoadingIndicatorDelegate {
     
     public init(_ url: String!, httpMethod: HttpRequestMethod!)
     {
-        super.init()
-        
         self.urlString = url
         self.httpMethod = httpMethod
         self.headers = [:]
@@ -116,12 +114,6 @@ public class QwikHttp : NSObject,QwikHttpLoadingIndicatorDelegate {
         self.timeOut = QwikHttpConfig.defaultTimeOut
         self.loadingTitle = QwikHttpConfig.defaultLoadingTitle
         self.responseThread = QwikHttpConfig.defaultResponseThread
-        
-        //if we don't have a loading indicator delegate set, then use this class.
-        if(QwikHttpConfig.loadingIndicatorDelegate == nil)
-        {
-            QwikHttpConfig.loadingIndicatorDelegate = self
-        }
     }
     
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
@@ -334,21 +326,6 @@ public class QwikHttp : NSObject,QwikHttpLoadingIndicatorDelegate {
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
-    }
-    
-    
-    /*********** LOADING INDICATORS ***********/
-    public func showIndicator(title: String?)
-    {
-        QwikHttp.mainThread { () -> () in
-            QwikHttpLoadingIndicator.shared().showWithTitle(title)
-        }
-    }
-    public func hideIndicator()
-    {
-        QwikHttp.mainThread { () -> () in
-            QwikHttpLoadingIndicator.shared().hide()
-        }
     }
     
     /**** HELPERS ****/

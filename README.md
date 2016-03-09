@@ -10,7 +10,7 @@ What separates QwikHttp from other Networking Libraries is its:
 - simple, yet robust loading indicator implementation
 - response interceptors provide a method to handle unauthorized responses and token refreshing with ease.
 
-QwikHttp is written in Swift but works (without generics) great with objective-c. It utilizes the most recent ios networking API, NSURLSession. QwikHttp is compatible with iOS 7+, tvOS, WatchOS 2 and OSX 10.8+. 
+QwikHttp is written in Swift but works (without generics) great with objective-c. It utilizes the most recent ios networking API, NSURLSession. QwikHttp is compatible with iOS 8+, tvOS, WatchOS 2 and OSX 10.8+. 
 
 ## Usage
 
@@ -170,7 +170,9 @@ QwikHttp("http://api.com", httpMethod: .post).setObjects(models).getArrayRespons
 
 ### Loading Indicators
 
-Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
+By using the QwikHttpLoadingIndicatorDelegate protocol, you can provide an interface for QwikHttp to show and hide loading indicators during your http requests, allowing you to use any indicator you'd like, but allowing you to set it up and let QwikHttp handle it.
+
+Once the default indicator delegate is set to QwikHttpConfig, Simply call the setLoadingTitle Method on your QwikHttp object and an indicator will automatically show when your request is running and hide when complete
 
 ```
 QwikHttp("http://api.com", httpMethod: .Get).setLoadingTitle("Loading").send()
@@ -185,9 +187,10 @@ QwikHttpConfig.setDefaultLoadingTitle(nil)
 QwikHttpConfig.setDefaultLoadingTitle("")
 ```
 
-####Custom Loading Indicators
+#### QwikHttpLoadingIndicator Delegate
 QwikHttp will allow you to easily use your own loading indicator class by setting the QwikHttpLoadingIndicatorDelegate on QwikHttpConfig. You can do this to use cool indicators like MBProgressHUD or SwiftSpinner but let QwikHttp handle showing and hiding them so you don't have to.
 
+The example below shows using a singleton helper class to handle your indicators, but this could be done in your app delegate, data service class, or within a view controller.
 ```swift
 import SwiftSpinner
 public class QwikHelper :  QwikHttpLoadingIndicatorDelegate

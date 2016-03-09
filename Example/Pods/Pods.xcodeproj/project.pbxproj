@@ -92,7 +92,6 @@
 		7EA69B1EFB1026B6A8206E348C9E3FEA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8941C5DA0F4FCF79581A939CDDEF1F7C /* Foundation.framework */; };
 		81E140D4F3FDAF29E92E6698B5792290 /* UIColor+Hex.h in Headers */ = {isa = PBXBuildFile; fileRef = 35356BACCC3930FFB8FC79EFA98A56FE /* UIColor+Hex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		830A52CAC8098D9D80576F2D64617906 /* NSURL+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AEF80DEBC532DA5163F6A692EE5E095 /* NSURL+Helpers.m */; };
-		85A5B77E0C3545A1198622E6EA282C8C /* QwikHttpLoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9D59A51928D8C0E3824801D3285782 /* QwikHttpLoadingIndicator.swift */; };
 		88AA6ADBD6E5C46D66839AB55EA198F6 /* SoundService.h in Headers */ = {isa = PBXBuildFile; fileRef = D8D80C71578D9C2ED254F917C7AFA796 /* SoundService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		895462D9283D8631696D01B58C0EEB29 /* QwikHttp.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 29D04FB72585B071F58843BEBA58EF4D /* QwikHttp.bundle */; };
 		898C766240576E95E9B32DE396F6D025 /* UIViewController+Top.m in Sources */ = {isa = PBXBuildFile; fileRef = 39BF10AD3E564D9D2EC6AE3133119F84 /* UIViewController+Top.m */; };
@@ -249,7 +248,6 @@
 		15AF0EC1EB13FC5B85E071B09DD1BCE5 /* UIImage+Cache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Cache.h"; path = "Pod/Classes/UIImage+Cache.h"; sourceTree = "<group>"; };
 		187FC32C75C10088BE81F05107F96E17 /* UIImage+Rounding.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Rounding.h"; path = "Pod/Classes/UIImage+Rounding.h"; sourceTree = "<group>"; };
 		19931A352A8F12371FD94E70C9C1C4F5 /* UIAlertController+TextEntry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIAlertController+TextEntry.m"; path = "Pod/Classes/UIAlertController+TextEntry.m"; sourceTree = "<group>"; };
-		1C9D59A51928D8C0E3824801D3285782 /* QwikHttpLoadingIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QwikHttpLoadingIndicator.swift; sourceTree = "<group>"; };
 		1DF86A27F821AA4DEF7F47ECAE0D8026 /* QwikJson.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = QwikJson.m; path = Pod/Classes/QwikJson.m; sourceTree = "<group>"; };
 		1E59415C37D5202798A2F1B21A7EF560 /* NSThread+Helpers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSThread+Helpers.h"; path = "Pod/Classes/NSThread+Helpers.h"; sourceTree = "<group>"; };
 		24A9747E153E4EBDA0FF04CE999AEE8E /* UIViewController+Background.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Background.h"; path = "Pod/Classes/UIViewController+Background.h"; sourceTree = "<group>"; };
@@ -700,7 +698,6 @@
 			children = (
 				5758A7F7F69ECC5E1A551E14523BF515 /* QwikDataConversion.swift */,
 				C7C555D7F21423AE91E88A111F7A2424 /* QwikHttp.swift */,
-				1C9D59A51928D8C0E3824801D3285782 /* QwikHttpLoadingIndicator.swift */,
 				43D73044E12F4F6559F462BE1A0F3D20 /* QwikHttpObjc.swift */,
 			);
 			path = Classes;
@@ -1250,7 +1247,6 @@
 				B7E00E9B2E892BB382A5A35DC35665F3 /* QwikDataConversion.swift in Sources */,
 				4012ED112567F4B698083B218D3AABDA /* QwikHttp-dummy.m in Sources */,
 				CC8D1AED829C095D2613386C45C1B4FA /* QwikHttp.swift in Sources */,
-				85A5B77E0C3545A1198622E6EA282C8C /* QwikHttpLoadingIndicator.swift in Sources */,
 				9B618A8F684DC37EADC9F158A5BA6E2A /* QwikHttpObjc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
