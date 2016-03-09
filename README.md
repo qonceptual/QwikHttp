@@ -332,10 +332,6 @@ pod "QwikHttp"
 
 ## Further Notes
 
-Another essential part of RESTful requests is parsing the response dictionaries (JSON) into our model objects, and passing model objects into our requests.
-Consider using QwikJson in combination with this library to complete your toolset.
-https://github.com/qonceptual/QwikJson
-
 Also, checkout the SeaseAssist pod for a ton of great helpers to make writing your iOS code even simpler!
 https://github.com/logansease/SeaseAssist
 
