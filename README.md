@@ -119,7 +119,7 @@ QwikHttp("http://api.com", httpMethod: .Get).getResponse(NSString.self,  { (resu
 ```
 
 #### Threading
-You can tell QwikHttp if you'd prefer your response handlers to occur on the main thread of the background thread.
+You can tell QwikHttp if you'd prefer your response handlers to occur on the main thread or the background thread.
 By default, all response handlers will be called on the Main Thread, however you can easily change this default or set it on a per request level.
 
 ```swift
@@ -238,7 +238,7 @@ public class QwikHelper : QwikHttpResponseInterceptor
     {
         //TODO check to see if response means that the token must be refreshed
         //if the token needs refreshing, refresh it- then save the new token to your auth service
-        //now update the header in the QwikHttp request and reset and run it again.
+        //now update the auth header in the QwikHttp request and reset and run it again.
         //call the handler with the results of the new request.
     }
 }
