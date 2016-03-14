@@ -19,10 +19,10 @@ import QwikJson
 }
 
 //the request interceptor can be used to intercept requests before they are sent out.
-public protocol QwikHttpObjcRequestInterceptor
+@objc public protocol QwikHttpObjcRequestInterceptor
 {
-    func shouldInterceptRequest(request: QwikHttpObjc!) -> Bool
-    func interceptRequest(request : QwikHttpObjc!,  handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+    @objc func shouldInterceptRequest(request: QwikHttpObjc!) -> Bool
+    @objc func interceptRequest(request : QwikHttpObjc!,  handler: (NSData?, NSURLResponse?, NSError?) -> Void)
 }
 
 
