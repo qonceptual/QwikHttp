@@ -214,11 +214,13 @@ public class QwikHelper :  QwikHttpLoadingIndicatorDelegate
 }
 ```
 
-###Response Interceptor
+###Response & Request Interceptors
 QwikHttp allows you to set a response interceptor that can selectively be called before each response is returned. Using this interceptor, you can do cool things like alter your responses in some way, or even cleanly handle unauthorized responses, allowing you to refresh an oAuth token or show the login screen under certain conditions.
 
+You may also use a Request Interceptor to intercept requests before they are even sent. This could allow you to detect that a token is expired or that an action is not authorized before even sending your request.
+
 ```swift
-public class QwikHelper : QwikHttpResponseInterceptor
+public class QwikHelper : QwikHttpResponseInterceptor, QwikHttpRequestInterceptor
 {
     public class func shared() -> QwikHelper {
         struct Singleton {
@@ -240,6 +242,18 @@ public class QwikHelper : QwikHttpResponseInterceptor
         //if the token needs refreshing, refresh it- then save the new token to your auth service
         //now update the auth header in the QwikHttp request and reset and run it again.
         //call the handler with the results of the new request.
+    }
+    public func shouldInterceptRequest(request: QwikHttp!) -> Bool
+    {
+        //check for an expired token date on your current token
+        return true
+    }
+    public func interceptRequest(request : QwikHttp!,  handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+    {
+        //TODO refresh your token, restart the request
+        //update the auth headers with the new token
+        request.getResponse(NSData.self) { (data, error, request) -> Void! in
+        handler(data,request.response,error)
     }
 }
 ```

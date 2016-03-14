@@ -46,6 +46,14 @@ public protocol QwikHttpResponseInterceptor
      func interceptResponse(request : QwikHttp!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
 }
 
+//the request interceptor can be used to intercept requests before they are sent out.
+public protocol QwikHttpRequestInterceptor
+{
+    func shouldInterceptRequest(request: QwikHttp!) -> Bool
+    func interceptRequest(request : QwikHttp!,  handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+}
+
+
 //a class to store default values and configuration for quikHttp
 @objc public class QwikHttpConfig : NSObject
 {
@@ -56,6 +64,8 @@ public protocol QwikHttpResponseInterceptor
     public static var loadingIndicatorDelegate: QwikHttpLoadingIndicatorDelegate? = nil
     public static var responseInterceptor: QwikHttpResponseInterceptor? = nil
     public static var responseInterceptorObjc: QwikHttpObjcResponseInterceptor? = nil
+    public static var requestInterceptor: QwikHttpRequestInterceptor? = nil
+    public static var requestInterceptorObjc: QwikHttpObjcRequestInterceptor? = nil
     public static var defaultResponseThread : ResponseThread = .Main
     
     //ensure timeout > 0
@@ -89,6 +99,7 @@ public class QwikHttp {
     public var responseData : NSData?
     public var response: NSURLResponse?
     public var responseString : NSString?
+    public var wasIntercepted = false
     
     //class params
     private var timeOut : Double!
@@ -326,6 +337,7 @@ public class QwikHttp {
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
+        self.wasIntercepted = false
     }
     
     /**** HELPERS ****/
@@ -397,6 +409,15 @@ private class HttpRequestPooler
             else
         {
             handler(nil,nil,NSError(domain: "QwikHTTP", code: 500, userInfo:["Error" : "Invalid URL"]))
+            return
+        }
+        
+        //see if this request should be intercepted and if so call the interceptor.
+        //don't worry about a completion handler since this should be called by the interceptor
+        if let interceptor = QwikHttpConfig.requestInterceptor where interceptor.shouldInterceptRequest(requestParams) && !requestParams.wasIntercepted
+        {
+            requestParams.wasIntercepted = true
+            interceptor.interceptRequest(requestParams, handler: handler)
             return
         }
         
@@ -484,9 +505,10 @@ private class HttpRequestPooler
                 requestParams.response = httpResponse
                 
                 //see if we are configured to use an interceptor and if so, check it to see if we should use it
-                if let interceptor = QwikHttpConfig.responseInterceptor where interceptor.shouldInterceptResponse(httpResponse)
+                if let interceptor = QwikHttpConfig.responseInterceptor where !requestParams.wasIntercepted &&  interceptor.shouldInterceptResponse(httpResponse)
                 {
                     //call the interceptor and return. The interceptor will call our handler.
+                    requestParams.wasIntercepted = true
                     interceptor.interceptResponse(requestParams, handler: handler)
                     return
                 }

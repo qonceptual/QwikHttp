@@ -18,6 +18,14 @@ import QwikJson
     @objc func interceptResponseObjc(request : QwikHttpObjc!, handler: (NSData?, NSURLResponse?, NSError?) -> Void)
 }
 
+//the request interceptor can be used to intercept requests before they are sent out.
+public protocol QwikHttpObjcRequestInterceptor
+{
+    func shouldInterceptRequest(request: QwikHttpObjc!) -> Bool
+    func interceptRequest(request : QwikHttpObjc!,  handler: (NSData?, NSURLResponse?, NSError?) -> Void)
+}
+
+
 //the main request object
 @objc public class QwikHttpObjc : NSObject {
     
@@ -35,6 +43,7 @@ import QwikJson
     public var responseData : NSData?
     public var response: NSURLResponse?
     public var responseString : NSString?
+    public var wasIntercepted = false
     
     //class params
     private var timeOut : Double!
@@ -256,6 +265,7 @@ import QwikJson
         self.responseData = nil
         self.responseError = nil
         self.responseData = nil
+        self.wasIntercepted = false
     }
     
     /**** HELPERS ****/
@@ -343,6 +353,15 @@ private class HttpRequestPooler
             return
         }
         
+        //see if this request should be intercepted and if so call the interceptor.
+        //don't worry about a completion handler since this should be called by the interceptor
+        if let interceptor = QwikHttpConfig.requestInterceptorObjc where interceptor.shouldInterceptRequest(requestParams) && !requestParams.wasIntercepted
+        {
+            requestParams.wasIntercepted = true
+            interceptor.interceptRequest(requestParams, handler: handler)
+            return
+        }
+        
         //create our http request
         let request = NSMutableURLRequest(URL: url, cachePolicy: requestParams.cachePolicy, timeoutInterval: requestParams.timeOut)
         
@@ -427,9 +446,10 @@ private class HttpRequestPooler
                 requestParams.response = httpResponse
             
                 //see if we are configured to use an interceptor and if so, check it to see if we should use it
-                if let interceptor = QwikHttpConfig.responseInterceptorObjc where interceptor.shouldInterceptResponse(httpResponse)
+                if let interceptor = QwikHttpConfig.responseInterceptorObjc where !requestParams.wasIntercepted && interceptor.shouldInterceptResponse(httpResponse)
                 {
                     //call the interceptor and return. The interceptor will call our handler.
+                    requestParams.wasIntercepted = true
                     interceptor.interceptResponseObjc(requestParams, handler: handler)
                     return
                 }

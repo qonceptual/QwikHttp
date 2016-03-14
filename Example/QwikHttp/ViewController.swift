@@ -15,21 +15,14 @@ class ViewController: UIViewController {
     //an index variable to keep track of the # of requests we've sent
     var i = -1
     
+    override func viewDidLoad() {
+        QwikHelper.shared().configure()
+        super.viewDidLoad()
+    }
+    
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        //configure qwikHttp
-        QwikHttpConfig.setDefaultTimeOut(300)
-        QwikHttpConfig.defaultParameterType = .Json
-        QwikHttpConfig.defaultLoadingTitle = "Loading"
-        QwikHttpConfig.defaultCachePolicy = .ReloadIgnoringLocalCacheData
-        
-        //set our loading indicator and response interceptor. This isn't required, but done just for test
-        //and example
-        QwikHttpConfig.loadingIndicatorDelegate = QwikHelper.shared()
-        QwikHttpConfig.responseInterceptor = QwikHelper.shared()
-        
-        //send our first request
         sendRequest()
     }
     
