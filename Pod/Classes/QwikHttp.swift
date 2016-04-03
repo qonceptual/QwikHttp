@@ -130,16 +130,23 @@ public class QwikHttp {
     /**** ADD / SET VARIABLES. ALL RETURN SELF TO ENCOURAGE SINGLE LINE BUILDER TYPE SYNTAX *****/
     
     //add a parameter to the request
-    public func addParam(key : String!, value: String!) -> QwikHttp
+    public func addParam(key : String!, value: String?) -> QwikHttp
     {
-        params[key] = value
+        if let v = value
+        {
+            params[key] = v
+        }
+        
         return self
     }
     
     //add a header
-    public func addHeader(key : String!, value: String!) -> QwikHttp
+    public func addHeader(key : String!, value: String?) -> QwikHttp
     {
-        headers[key] = value
+        if let v = value
+        {
+            headers[key] = v
+        }
         return self
     }
     
@@ -147,6 +154,28 @@ public class QwikHttp {
     public func setLoadingTitle(title: String?) -> QwikHttp
     {
         self.loadingTitle = title
+        return self
+    }
+    
+    //add a single optional URL parameter
+    public func addUrlParam(key: String!, value: String?) -> QwikHttp
+    {
+        guard let param = value else
+        {
+            return self
+        }
+        
+        //start our URL Parameters
+        if let _ = urlString.rangeOfString("?")
+        {
+            urlString = urlString + "&"
+        }
+        else
+        {
+            urlString = urlString + "?"
+        }
+        
+        urlString = urlString + QwikHttp.paramStringFrom([key : param])
         return self
     }
     
