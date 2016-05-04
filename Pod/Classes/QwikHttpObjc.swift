@@ -257,6 +257,12 @@ import QwikJson
         }
     }
     
+    //this method is primarily used for the response interceptor as any easy way to restart the request
+    @objc public func resend(handler: (NSData?,NSURLResponse?, NSError? ) -> Void)
+    {
+        HttpRequestPooler.sendRequest(self, handler: handler)
+    }
+    
     //reset our completion handlers and response data
     @objc public func reset()
     {

@@ -271,7 +271,7 @@ public class QwikHttp {
     /********* RESPONSE HANDLERS / SENDING METHODS *************/
     
     //get an an object of a generic type back
-    public func getResponse<T : QwikDataConversion>(type: T.Type, _ handler :  (T?, NSError?, QwikHttp!) -> Void!)
+    public func getResponse<T : QwikDataConversion>(type: T.Type, _ handler :  (T?, NSError?, QwikHttp!) -> Void)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
@@ -304,7 +304,7 @@ public class QwikHttp {
     }
     
     //get an array of a generic type back
-    public func getArrayResponse<T : QwikDataConversion>(type: T.Type, _ handler :  ([T]?, NSError?, QwikHttp!) -> Void!)
+    public func getArrayResponse<T : QwikDataConversion>(type: T.Type, _ handler :  ([T]?, NSError?, QwikHttp!) -> Void)
     {
         HttpRequestPooler.sendRequest(self) { (data, response, error) -> Void in
             
@@ -356,6 +356,12 @@ public class QwikHttp {
                 }
             }
         }
+    }
+
+    //this method is primarily used for the response interceptor as any easy way to restart the request
+    public func resend(handler: (NSData?,NSURLResponse?, NSError? ) -> Void)
+    {
+        HttpRequestPooler.sendRequest(self, handler: handler)
     }
     
     //reset our completion handlers and response data
