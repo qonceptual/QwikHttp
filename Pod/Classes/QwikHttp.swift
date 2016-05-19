@@ -179,6 +179,7 @@ public class QwikHttp {
         return self
     }
     
+    
     //add an array of URL parameters
     public func addUrlParams(params: [String: String]!) -> QwikHttp
     {
@@ -193,6 +194,23 @@ public class QwikHttp {
         }
         urlString = urlString + QwikHttp.paramStringFrom(params)
         return self
+    }
+    
+    public func removeUrlParam(key: String!)
+    {
+        //get our query items from the url
+        if let urlComponents = NSURLComponents(string: urlString), items = urlComponents.queryItems
+        {
+            //get a new array of query items by removing any with the key we want
+            let newItems = items.filter { $0.name == key }
+            
+            //reconstruct our url if we removed anything
+            if(newItems.count != items.count)
+            {
+                urlComponents.queryItems = newItems
+                urlString = urlComponents.string
+            }
+        }
     }
     
     //set a quikJson into the request. Will serialize to json and set the content type.
