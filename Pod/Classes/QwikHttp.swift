@@ -199,16 +199,19 @@ public class QwikHttp {
     public func removeUrlParam(key: String!)
     {
         //get our query items from the url
-        if let urlComponents = NSURLComponents(string: urlString), items = urlComponents.queryItems
+        if #available(OSX 10.10, *)
         {
-            //get a new array of query items by removing any with the key we want
-            let newItems = items.filter { $0.name == key }
-            
-            //reconstruct our url if we removed anything
-            if(newItems.count != items.count)
+            if let urlComponents = NSURLComponents(string: urlString), items = urlComponents.queryItems
             {
-                urlComponents.queryItems = newItems
-                urlString = urlComponents.string
+                //get a new array of query items by removing any with the key we want
+                let newItems = items.filter { $0.name == key }
+                
+                //reconstruct our url if we removed anything
+                if(newItems.count != items.count)
+                {
+                    urlComponents.queryItems = newItems
+                    urlString = urlComponents.string
+                }
             }
         }
     }
