@@ -44,6 +44,7 @@ import QwikJson
     public var response: NSURLResponse?
     public var responseString : NSString?
     public var wasIntercepted = false
+    public var avoidResponseInterceptor = false
     
     //class params
     private var timeOut : Double!
@@ -257,6 +258,14 @@ import QwikJson
         }
     }
     
+    //a helper method to duck the response interceptor. Can be useful for cases like logout which
+    //could lead to infinite recursion
+    public func setAvoidResponseInterceptor(avoid : Bool!)  -> QwikHttpObjc!
+    {
+        self.avoidResponseInterceptor = true
+        return self
+    }
+    
     //this method is primarily used for the response interceptor as any easy way to restart the request
     @objc public func resend(handler: (NSData?,NSURLResponse?, NSError? ) -> Void)
     {
@@ -452,7 +461,7 @@ private class HttpRequestPooler
                 requestParams.response = httpResponse
             
                 //see if we are configured to use an interceptor and if so, check it to see if we should use it
-                if let interceptor = QwikHttpConfig.responseInterceptorObjc where !requestParams.wasIntercepted && interceptor.shouldInterceptResponse(httpResponse)
+                if let interceptor = QwikHttpConfig.responseInterceptorObjc where !requestParams.wasIntercepted && interceptor.shouldInterceptResponse(httpResponse) &&  && !requestParams.avoidResponseInterceptor
                 {
                     //call the interceptor and return. The interceptor will call our handler.
                     requestParams.wasIntercepted = true
