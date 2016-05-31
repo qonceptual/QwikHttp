@@ -461,7 +461,7 @@ private class HttpRequestPooler
                 requestParams.response = httpResponse
             
                 //see if we are configured to use an interceptor and if so, check it to see if we should use it
-                if let interceptor = QwikHttpConfig.responseInterceptorObjc where !requestParams.wasIntercepted && interceptor.shouldInterceptResponse(httpResponse) &&  && !requestParams.avoidResponseInterceptor
+                if let interceptor = QwikHttpConfig.responseInterceptorObjc where !requestParams.wasIntercepted && interceptor.shouldInterceptResponse(httpResponse) && !requestParams.avoidResponseInterceptor
                 {
                     //call the interceptor and return. The interceptor will call our handler.
                     requestParams.wasIntercepted = true
