@@ -412,6 +412,13 @@ public class QwikHttp {
     private func combinedDictionary(from: [String:AnyObject]!, with: [String:AnyObject]! ) -> [String:AnyObject]!
     {
         var result = from
+
+        //ensure someone didn't pass us nil on accident
+        if(with == nil)
+        {
+            return result
+        }
+        
         for(key, value) in with
         {
             result[key] = value
