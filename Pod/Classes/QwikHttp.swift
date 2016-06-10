@@ -587,7 +587,8 @@ private class HttpRequestPooler
                 }
                 
                 //error for invalid response
-                if httpResponse.statusCode != 200 && error == nil
+                //in order to be considered successful the response must be in the 200's
+                if httpResponse.statusCode / 100 != 2 && error == nil
                 {
                     handler(responseData, urlResponse, NSError(domain: "QwikHttp", code: httpResponse.statusCode, userInfo: ["Error": "Error Response Code"]))
                     return
