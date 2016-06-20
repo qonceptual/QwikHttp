@@ -1,6 +1,6 @@
 //
 //  QwikHttp.swift
-//  oAuthExample
+//  QwikHttp
 //
 //  Created by Logan Sease on 1/26/16.
 //  Copyright © 2016 Logan Sease. All rights reserved.
@@ -101,7 +101,6 @@ public class QwikHttp {
     public var response: NSURLResponse?
     public var responseString : NSString?
     public var wasIntercepted = false
-    
     
     //class params
     private var timeOut : Double!
