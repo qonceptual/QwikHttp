@@ -78,16 +78,8 @@ Use Nested Objects (even nested arrays) and custom date serlizers
 
 ```
 
-Customize field names if they don't match the database
+Perform Specialized Logic during serialization or deserialization.
 ```objective-c
-+(Class)classForKey:(NSString*)key
-{
-    if([key isEqualToString:@"menu_items"] || [key isEqualToString:@"menuItems"])
-    {
-        return [MenuItem class];
-    }
-    return [super classForKey:key];
-}
 
 //override in subclass to perform some custom deserizliation or change property keys
 -(void)writeObjectFrom:(NSDictionary*)inputDictionary forKey:(NSString*)key toProperty:(NSString*)property
@@ -113,6 +105,27 @@ Customize field names if they don't match the database
 }
 ```
 
+Define a property map to name your object fields differently for your model objects vs the API. This may be necessary if you use a reserved keyword like "description" or if your api returns underscore cased fields
+```
++(NSDictionary<NSString*,NSString*>*)apiToObjectMapping
+{
+    //specify custom field mappings for qwikJsonObjects
+    return @{@"description": @"descriptionText"};
+}
+```
+
+Define an array of transient properties to specify properties that should not be written during serialization.
+Note that some fields are marked transient by default. These are as follows:
+#define kDefaultTransientProperties @[@"superclass", @"hash", @"debugDescription", @"description"]
+If you wish to pass one of these variables in, simply rename the field using the apiToObjectMapping method
+
+```
++(NSArray<NSString*>*)transientProperties
+{
+    return @{@"someCalculatedFieldName"};
+}
+```
+
 Write straight to preferences
 ```objective-c
 [self.restaurant writeToPreferencesWithKey:@"data"];
@@ -134,10 +147,13 @@ Convert to and from Strings
 
 
 ## Supported Field Types Types
-- Boolean
-- NSString
-- NSArray
-- NSNumber
+- Boolean  / Bool
+- NSString / String
+- NSArray  / []
+- NSNumber 
+
+* Note, if you are using Swift and using booleans, use Bool. DO NOT use Bool? since optional booleans cannot be expressed in objective c
+
 
 ### Custom Date Serializers, handle parsing various date / time formats
 
@@ -157,6 +173,9 @@ Note that you can customize the date formats by calling setDateFormat on the dat
 ```objective-c
 [DBDate setDateFormat:@"MM/DD/YYYY"];
 ```
+
+##NSManagedObject Support
+If you are using CoreData and would like to use QwikJson, you may also simply import and extend QwikJsonManagedObject instead of QwikJson
 
 ## Android
 

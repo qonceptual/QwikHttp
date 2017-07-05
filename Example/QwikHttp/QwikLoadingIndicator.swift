@@ -11,20 +11,20 @@ import UIKit
 
 //this is a very simple and basic loading indicator that you could incorporate into your project
 //as a loading indicator for QwikHttp
-public class QwikLoadingIndicator : NSObject
+open class QwikLoadingIndicator : NSObject
 {
     var indicator : UIActivityIndicatorView?
-    public var yOffset : CGFloat = -60
+    open var yOffset : CGFloat = -60
     
     // shared instance
-    public class func shared() -> QwikLoadingIndicator {
+    open class func shared() -> QwikLoadingIndicator {
         struct Singleton {
             static let instance = QwikLoadingIndicator()
         }
         return Singleton.instance
     }
     
-    public func showWithTitle(title: String?)
+    open func show(withTitle title: String?)
     {
         //TODO, add a label.
         if let oldIndicator = self.indicator
@@ -32,21 +32,21 @@ public class QwikLoadingIndicator : NSObject
             oldIndicator.removeFromSuperview()
         }
         
-        let indicator = UIActivityIndicatorView(frame: CGRectMake(0,0,60,60))
-        guard let window = UIApplication.sharedApplication().keyWindow else
+        let indicator = UIActivityIndicatorView(frame: CGRect(x: 0,y: 0,width: 60,height: 60))
+        guard let window = UIApplication.shared.keyWindow else
         {
             return
         }
         
         window.addSubview(indicator)
-        indicator.center = CGPointMake(window.center.x, window.center.y + self.yOffset)
-        indicator.color = UIColor.blackColor()
-        indicator.transform = CGAffineTransformMakeScale(2.5, 2.5)
+        indicator.center = CGPoint(x: window.center.x, y: window.center.y + self.yOffset)
+        indicator.color = UIColor.black
+        indicator.transform = CGAffineTransform(scaleX: 2.5, y: 2.5)
         indicator.startAnimating()
         self.indicator = indicator
     }
     
-    public func hide()
+    open func hide()
     {
         if let indicator = self.indicator
         {

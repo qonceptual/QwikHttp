@@ -33,8 +33,24 @@
     return object;
 }
 
-#pragma mark serialization Helpers
 
+#pragma mark setup
+
++(NSDictionary<NSString*,NSString*>*)apiToObjectMapping
+{
+    //this should be overridden in the subclass
+    return nil;
+}
+
++(NSArray<NSString*>*)transientProperties
+{
+    //this should be overridden in the subclass
+    return nil;
+}
+
+
+
+#pragma mark serialization Helpers
 
 /**
  * Override this in your subclasses to allow for any special data types to be set into the object,
@@ -44,6 +60,7 @@
  */
 -(void)setValue:(id)value forKey:(NSString *)key
 {
+    @try{
     //remove any null values
     if([value isKindOfClass:[NSArray class]])
     {
@@ -60,6 +77,14 @@
     }
     else{
         [super setValue:value forKey:key];
+    }
+    }
+    @catch(NSException * e)
+    {
+        if([self respondsToSelector:NSSelectorFromString(key)])
+        {
+            NSLog(@"Error Setting %@: %@", key, e);
+        }
     }
     
 }
@@ -187,10 +212,24 @@
 //serialization for specific properties
 -(void)addProperty:(NSString*)key toDictionary:(NSMutableDictionary*)dict
 {
+    //see if we need to rename our key
+    NSDictionary * nameMappings = [[self class]apiToObjectMapping];
+    NSString * renamedKey = key;
+    if([nameMappings.allValues containsObject:key])
+    {
+        renamedKey = [nameMappings allKeysForObject:key].firstObject;
+    }
+    
+    //if we are supposed to ignore this field, do not serialize it
+    if([[[self class] transientProperties] containsObject:renamedKey] || [kDefaultTransientProperties containsObject:renamedKey])
+    {
+        return;
+    }
+    
     //if this object is a serializable object, serialize it and add it to the dictionary
     if([[self valueForKey:key] respondsToSelector:@selector(toDictionary)])
     {
-        [self serializeObject:[[self valueForKey:key]toDictionary] withKey:key toDictionary:dict];
+        [self serializeObject:[[self valueForKey:key]toDictionary] withKey:renamedKey toDictionary:dict];
     }
     
     //if this is an array of db objects that is not empty then serialize the array and set it
@@ -202,27 +241,33 @@
         {
             [serializedArray addObject:[nonSerializedObject toDictionary]];
         }
-        [self serializeObject:serializedArray withKey:key toDictionary:dict];
+        [self serializeObject:serializedArray withKey:renamedKey toDictionary:dict];
     }
     
     //if this is a specialized dbField object as defined by implementing the dbField protocol, such as DBDate
     //use the protocol conversion methods to convert and save the value
     else if([[self valueForKey:key] respondsToSelector:@selector(toDbFormattedString)])
     {
-        [self serializeObject:[[self valueForKey:key]toDbFormattedString]  withKey:key toDictionary:dict];
+        [self serializeObject:[[self valueForKey:key]toDbFormattedString]  withKey:renamedKey toDictionary:dict];
     }
     
     //otherwise just set it
     else if([self valueForKey:key])
     {
-        [self serializeObject:[self valueForKey:key] withKey:key toDictionary:dict];
+        [self serializeObject:[self valueForKey:key] withKey:renamedKey toDictionary:dict];
     }
 }
 
 //this exists so that a subclass might override this and specify a new key or perform some custom action.
 -(void)serializeObject:(NSObject*)object withKey:(NSString*)key toDictionary:(NSMutableDictionary*)dictionary
 {
+    @try{
     [dictionary setObject:object forKey:key];
+    }
+    @catch(NSException * e)
+    {
+        NSLog(@"Error Setting %@: %@",key,e);
+    }
 }
 
 
@@ -285,8 +330,17 @@
  */
 -(void)writeObjectFrom:(NSDictionary*)inputDictionary forKey:(NSString*)key toProperty:(NSString*)property
 {
+    
+    //see if we need to rename our key
+    NSDictionary * nameMappings = [[self class]apiToObjectMapping];
+    NSString * renamedKey = key;
+    if([nameMappings.allKeys containsObject:key])
+    {
+        renamedKey = [nameMappings valueForKey:key];
+    }
+    
     //determine the type of object we are going to be setting
-    Class objectClass = [[self class] classForKey:key];
+    Class objectClass = [[self class] classForKey:renamedKey];
     
     @try {
         
@@ -297,7 +351,7 @@
         if(objectClass != nil && [[inputDictionary objectForKey:key]isKindOfClass:[NSDictionary class]])
         {
             QwikJson * subObject = [objectClass objectFromDictionary:[inputDictionary objectForKey:key]];
-            [self setValue:subObject forKey:property];
+            [self setValue:subObject forKey:renamedKey];
         }
         
         //if this is an array then parse that object array and set it
@@ -305,7 +359,7 @@
         {
             NSArray * jsonArray = [inputDictionary objectForKey:key];
             NSArray * objectArray = [[self class] arrayForJsonArray:jsonArray ofClass:objectClass];
-            [self setValue:objectArray forKey:property];
+            [self setValue:objectArray forKey:renamedKey];
         }
         
         //if this is a specific dbField type then parse this using the dbField parsing protocol
@@ -314,7 +368,7 @@
             id valueObject = [objectClass objectFromDbString:[inputDictionary objectForKey:key]];
             if(valueObject)
             {
-                [self setValue:valueObject forKey:property];
+                [self setValue:valueObject forKey:renamedKey];
             }
         }
         
@@ -323,18 +377,27 @@
         else if(objectClass == [NSString class] && [[inputDictionary valueForKey:key] isKindOfClass:[NSNumber class]])
         {
             NSNumber * idNumber = [inputDictionary valueForKey:key];
-            [self setValue:[idNumber stringValue] forKey:key];
+            [self setValue:[idNumber stringValue] forKey:renamedKey];
+        }
+        
+        //if this is supposed to be an NSNumber, but the api is returning it as an NSString, convert it to a NSNumber
+        else if(objectClass == [NSNumber class] && [[inputDictionary valueForKey:key] isKindOfClass:[NSString class]])
+        {
+            NSString * idString = [inputDictionary valueForKey:key];
+            NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+            f.numberStyle = NSNumberFormatterDecimalStyle;
+            [self setValue:[f numberFromString:idString]  forKey:renamedKey];
         }
         
         //otherwise, this is just a standard setter method, so set the value
         else{
             if(![[inputDictionary valueForKey:key] isEqual:[NSNull null]])
             {
-                [self setValue:[inputDictionary valueForKey:key] forKey:property];
+                [self setValue:[inputDictionary valueForKey:key] forKey:renamedKey];
             }
             else
             {
-                [self setValue:nil forKey:property];
+                [self setValue:nil forKey:renamedKey];
             }
         }
         
@@ -478,11 +541,12 @@ static NSString * dbDateTimeFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 -(id)initWithDate:(NSDate*)date
 {
-    if([super init])
+    if([super init] && date)
     {
         self.date = date;
+        return self;
     }
-    return self;
+    return nil;
 }
 
 -(id)initWithDBDate:(DBDate*)dbDate andDBTime:(DBTime*)dbTime
@@ -538,11 +602,12 @@ static NSString * dbDateFormat = @"yyyy-MM-dd";
 
 -(id)initWithDate:(NSDate*)date
 {
-    if([super init])
+    if([super init] && date)
     {
         self.date = date;
+        return self;
     }
-    return self;
+    return nil;
 }
 
 @end
@@ -581,11 +646,12 @@ static NSString * dbTimeFormat = @"HH:mm:ss";
 }
 -(id)initWithDate:(NSDate*)date
 {
-    if([super init])
+    if([super init] && date)
     {
         self.date = date;
+        return self;
     }
-    return self;
+    return nil;
 }
 
 @end
@@ -622,11 +688,12 @@ static NSString * dbTimeFormat = @"HH:mm:ss";
 }
 -(id)initWithDate:(NSDate*)date
 {
-    if([super init])
+    if([super init] && date)
     {
         self.date = date;
+        return self;
     }
-    return self;
+    return nil;
 }
 
 @end
