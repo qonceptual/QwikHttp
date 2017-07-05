@@ -30,7 +30,8 @@ In this package you will find the following:
 - Blurred Background Helpers, to present a view over another and blur the background.
 - Keyboard Helpers to add an action tool bar and hide the keyboard on click
 - TextField subclasses for date and value inputs
-
+- A service to help send emails easily from anywhere
+- SO MUCH MORE!
 
 
 Enjoy! Please feel free to fork and contribute to this repo!
@@ -70,6 +71,8 @@ Logan Sease, lsease@gmail.com
 SeaseAssist is available under the MIT license. See the LICENSE file for more info.
 
 
+#### Sorry, there is a lot here. I will do my best to try to keep this documentation readable.
+
 #UI CLASSES
 
 ##CleanButton
@@ -86,6 +89,13 @@ Create a UITextField with a Date picker instead of a keyboard
 
 ##ValuePickerTextField
 A UITextField with a PickerView instead of a keyboard
+
+#MLTBadgeView
+A badge that goes over any UIView. See UIView+Badge.h
+```
+[view.badge setBadgeValue:@"4"];
+```
+
 
 #SERVICES
 
@@ -123,10 +133,25 @@ Simple Text to Speech with the Siri API
 -(void)speakText:(NSString*)text;
 ```
 
+##Email Service
+A simple Email interface to open an email view controller from anywhere.
+```
+-(void)emailTo:(NSArray*)emails withSubject:(NSString*)subject body:(NSString*)body attachments:(NSArray<MailServiceAttachment*>*)attachments fromVC:(UIViewController*)parent  andCompletion:(void(^)(BOOL success))handler;
+```
+
+##Image Picker
+A simple interface to show an image picker
+```
+@interface ImagePickerHelper 
+-(void)selectImageFrom:(UIViewController*)source ofType:(UIImagePickerControllerSourceType)type andCompletion:(void(^)(UIImage* image))handler;
+```
+
 #NETWORKING
 
 ##HTTPRequest
-A helper class to make http requests asynchronously in one line without the need for any 3rd party frameworks
+A helper class to make http requests asynchronously in one line without the need for any 3rd party frameworks.
+
+##For a more robust Networking helper, see QwikHttp, and also QwikJson for json parsing.
 ```objective-c
 +(void)jsonRequestToUrl:(NSString*)urlString withMethod:(NSString*)method withHeaders:(NSDictionary*)headers withParams:(NSDictionary*)params withHandler:(void (^)(NSString* response,NSError * error))handler;
 
@@ -138,8 +163,9 @@ A helper class to make http requests asynchronously in one line without the need
 ##Reachability Helpers
 Find our internet connection status.
 ```objective-c
-GCNetworkReachability
-+ (BOOL)connected;
+@interface ReachabilityTest : NSObject
++(BOOL)connected;
+@end
 ```
 #CLASS EXTENSIONS
 
@@ -186,17 +212,32 @@ GCNetworkReachability
 ##NSMutableArray Helpers
 ```objective-c
 - (void)shuffle;
+
+//wrap an array around a single object (make it the first object and then go to the end
+//and start back at the beginning.
+-(NSArray*)rotatedArrayAround:(NSInteger)index;
 ```
 
 ##NSString Helpers
 ```objective-c
 -(NSInteger)occurancesOfString:(NSString*)test;
+-(BOOL)contains:(NSString *)string;
++(NSString*)empty;
+- (NSInteger)indexOf: (char)character;
+-(NSArray *)splitOnChar:(char)ch;
+-(NSString *)substringFrom:(NSInteger)from to:(NSInteger)to;
+-(NSString *)stringByStrippingWhitespace;
+-(NSString*)initials; //Herby Hancock = HH
++(NSString*)displayString:(float)number; //1,200 = 1.2K
 ```
 
 ##NSString validation
 ```objective-c
+-(BOOL)isValidEmail:(BOOL)laxValidation;
 -(BOOL)isValidEmail;
 -(BOOL)isDigitOfLength:(NSInteger)length;
+-(BOOL)isBlank;
++(BOOL)isValidAlphanumbericChars:(NSString*)textString;
 ```
 
 ##Encryption Helpers
@@ -223,16 +264,31 @@ Run blocks in the main or background threads with ease
 +(void)delay:(float)length code:(void (^)())function;
 ```
 
-##Device Identifiers
+##UIDevice: Unique Identifiers
 Since apple now longer gives access to device level Identifier information, this is another way to get an Identifier based on a hash of the mac address
 ```objective-c
 - (NSString *) uniqueDeviceIdentifier;
 - (NSString *) uniqueGlobalDeviceIdentifier;
 ```
+
+##UIDevice system version
+```objective-c
++(BOOL)versionGreaterThanOrEqual:(NSString*)version;
+```
+
+##Keychain Helpers
+Read and write to the keychain.
+```objective-c
+@interface UIDevice (Keychain)
++(void)write:(NSString*)value toKeychainWithKey:(NSString*)key appSpecific:(BOOL)appSpecific;
++(NSString*)readFromKeychainWithKey:(NSString*)key appSpecific:(BOOL)appSpecific;
+@end
+```
+
 ##Alerts
 
-###MBProgressHUD+Singleton
-An extension to MBProgressHUD to show a loading dialog singleton without needing to add it to your view or set it up.
+###SAMBProgressHUD+Singleton
+An extension to SAMBProgressHUD to show a loading dialog singleton without needing to add it to your view or set it up.
 ```objective-c
 +(void)showWithTitle:(NSString*)title;
 +(void)hide;
@@ -270,7 +326,26 @@ Show a quick "Toast" on screen for a desired amount of time
 
 //Scale an image.
 - (UIImage *)imageByScalingProportionallyToSize:(CGSize)targetSize;
+
+//turn an image to greyscale
+-(UIImage*) toGrayscale;
+
+//capture an uiimage from a uiview
++(UIImage*)fromView:(UIView*)view;
+
 ```
+
+Cache image and load from cache
+```
++(void)cacheImage:(UIImage*)image forUrl:(NSString*)url;
++(NSString*)cacheFileNameFor:(NSString*)url;
++(UIImage*)cachedImageForUrl:(NSString*)url;
++(void)loadImageToCacheFrom:(NSString*)url;
+```
+
+
+
+
 ###UIImageView Helpers
 Set an image from a URL and cache the image locally.
 ```objective-c
@@ -288,6 +363,13 @@ Set an image from URL to a UIImage View with caching and a default
 -(void)setImageFromUrl:(NSString*)url withDefault:(UIImage*)defaultImage andRounding:(BOOL)round;
 ```
 
+Set an image from URL like above, but prefill with initials if no image is found
+```
+@interface UIImageView (Initials)
+-(UILabel*)addInitialsPlaceholder:(NSString*)title circle:(BOOL)circle;
+-(void)setImageFromUrl:(NSString*)urlString withPlaceholderString:(NSString*)holder withPlaceHolderImage:(UIImage*)image rounding:(BOOL)round;
+-(void)setImageFromUrl:(NSString*)urlString withPlaceholderString:(NSString*)holder withPlaceHolderImage:(UIImage*)image rounding:(BOOL)round completionHandler:(BoolCompletionHandler)handler;
+```
 
 ##Animation
 
@@ -307,12 +389,23 @@ Add cool motion effects that give your app depth by moving as you move your devi
 -(void)addVerticalMotionEffectsWithOffset:(float)offset;
 -(void)resizeFullScreenViewAndAddMotionEffectsWithOffset:(float)offset;
 -(void)resizeHorizontallyAndAddMotionEffectsWithOffset:(float)offset;
++(void)addMotionEffectsTo:(NSArray*)views withOffset:(float)offset;
+```
+
+###UIView+AnimateShow
+animating hiding and showing of a view or a group of views
+```
+-(void)animateShow;
+-(void)animateHide;
++(void)animateShow:(NSArray<UIView*>*)views;
++(void)animateHide:(NSArray<UIView*>*)views;
++(void)animateShow:(NSArray<UIView*>*)views withDelay:(float)delay;
 ```
 
 
 ##View Appearance
 
-###UIView+Rounding
+###UIView
 ```objective-c
 //round the corners 
 -(void)round:(float)cornerRadius withBorderWidth:(float)width andColor:(UIColor*)color;
@@ -321,6 +414,12 @@ Add cool motion effects that give your app depth by moving as you move your devi
 //completely circle the view and optionally add a border.
 -(void)circleWithColor:(UIColor*)color width:(float)width;
 -(void)circle;
+
+//add a visual effect view with a blur
+-(UIVisualEffectView*)blur;
+
+//adjust a frame
+-(void)adjustFrameXOffset:(float)horizontal yOffset:(float)vertical hOffset:(float)height wOffset:(float)width;
 ```
 
 ###UIButton+Helpers
@@ -330,16 +429,36 @@ Add cool motion effects that give your app depth by moving as you move your devi
 -(void)setTitle:(NSString*)title;
 ```
 
+###UIColor+hex.h
+```objective-c
++(UIColor*)colorWithHex:(NSString*)hex;
+```
+
+###Segmented Control
+```objective-c
+@interface UISegmentedControl (Helpers)
+-(BOOL)setSelectedSegmentNamed:(NSString*)name;
+-(NSArray*)allTitles;
+-(NSString*)selectedSegementTitle;
+@end
+```
+
+###
+
 ##Application View Hierarchy
 Find the top most view controller from anywhere. Searches recursively through navigation, Tab bar and modal view controllers in your app window
 ###UIViewController+Top
 ```objective-c
 +(UIViewController*)topViewController;
 ```
+```
+@interface UIView (Search)
+-(NSArray*)searchForSubviewsOfType:(Class)searchClass;
+@end
+```
 
-
-##Blurred Backgrounds
-###For use with a Covers Current Context Modal Transition
+##Backgrounds
+### BLURRED: For use with a Covers Current Context Modal Transition
 ```objective-c
 @interface UIViewController (Blur)
 -(UIVisualEffectView*)blurBackground;
@@ -360,16 +479,47 @@ Find the top most view controller from anywhere. Searches recursively through na
 +(void)present:(nonnull UIViewController* )newVC on:(nullable UIViewController*)source withBlur:(float)blurAmount;
 ```
 
-##Transition Helpers
+###Add Non-Blurred background images
+
+```
+@interface UIViewController (Background)
+-(void)setBackgroundImage:(UIImage*)image withAlpha:(float)alpha;
+@end
+
+
+@interface UITableViewController (Background)
+-(void)setBackgroundImage:(UIImage*)image withAlpha:(float)alpha;
+@end
+```
+
+##UITableView Helpers
+Reload sections of a tableview
 ```objective-c
+-(void)reloadSection:(NSInteger)section;
+-(void)reloadSections:(NSInteger)fromSection to:(NSInteger)toSection;
+```
+Add a header to a tableview
+```objective-c
+-(void)setupTableHeader:(UIImage*)image;
+```
+
+##Navigation Helpers
+
+###Add Tranitions
+```objective-c
+@interface UINavigationController (Transition)
+//add a fade transitions between view controllers for your next push
 -(void)addFadeTransition;
 
 ```
 
-##UIDevice system version
-```objective-c
-+(BOOL)versionGreaterThanOrEqual:(NSString*)version;
+//go back, either by popping or dismissing--- but let this figure out which.
 ```
+UIViewController+Back
+-(void)goBackWithAnimation:(BOOL)animates;
+```
+
+
 
 ##Keyboard Helpers 
 ```objective-c

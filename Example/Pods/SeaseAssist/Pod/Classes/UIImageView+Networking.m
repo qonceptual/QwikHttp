@@ -13,17 +13,23 @@
 #import "GCNetworkReachability.h"
 
 @implementation UIImageView (Networking)
--(void)setImageFromUrl:(NSString*)urlString withDefault:(UIImage*)defaultImage andRounding:(BOOL)round
+
+
+-(void)setImageFromUrl:(NSString*)urlString withDefault:(UIImage*)defaultImage rounding:(BOOL)round completion:(void(^)(BOOL loaded))handler
 {
     self.image = defaultImage;
     if(round)
     {
         self.image = [defaultImage clippedToCircle];
     }
-
+    
     //return from an empty URL
     if(urlString.length <= 0)
     {
+        if(handler)
+        {
+            handler(false);
+        }
         return;
     }
     
@@ -36,6 +42,10 @@
         if(round)
         {
             self.image = [image clippedToCircle];
+        }
+        if(handler)
+        {
+            handler(true);
         }
         return;
     }
@@ -59,17 +69,26 @@
             if(self.tag == tag)
             {
                 //set the image data and reset the tag
-                [self setWithData:data fromUrl:urlString andRound:round];
+                [self setWithData:data fromUrl:urlString andRound:round completion:^(BOOL loaded) {
+                    if(handler)
+                    {
+                        handler(loaded);
+                    }
+                }];
                 self.tag = originalTag;
             }
         }];
     }
 }
 
--(void)setWithData:(NSData*)imageData fromUrl:(NSString*)url andRound:(BOOL)round
+-(void)setWithData:(NSData*)imageData fromUrl:(NSString*)url andRound:(BOOL)round completion:(void(^)(BOOL loaded))handler
 {
     if(imageData == nil || ![imageData isKindOfClass:[NSData class]])
     {
+        if(handler)
+        {
+            handler(NO);
+        }
         return;
     }
     
@@ -95,10 +114,32 @@
 #if !TARGET_OS_TV
             [UIImageView cacheImage:image forUrl:url];
 #endif
+            if(handler)
+            {
+                handler(YES);
+            }
         }];
-        
+    }
+    else{
+        if(handler)
+        {
+            handler(NO);
+        }
     }
 }
+
+//helpers
+
+-(void)setImageFromUrl:(NSString*)urlString withDefault:(UIImage*)defaultImage
+{
+    [self setImageFromUrl:urlString withDefault:defaultImage andRounding:NO];
+    
+}
+-(void)setImageFromUrl:(NSString*)urlString withDefault:(UIImage*)defaultImage andRounding:(BOOL)round
+{
+    [self setImageFromUrl:urlString withDefault:defaultImage rounding:round completion:nil];
+}
+
 
 +(UIImage*)cachedImageForUrl:(NSString*)url
 {
